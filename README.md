@@ -14,6 +14,20 @@ first.
 In addition to providing a library for Java developers and documentation, the test cases can be adapted by developers of
 other MeshCore-related projects.
 
+# Requirements
+
+This project requires at least Java 21 support. It is recommended to use IntelliJ, the project supplies run
+configurations for the tests.
+
+Use as recent a Maven version as you can, in doubt use `./mvnw` and/or specify your IDE to use Maven Wrapper.
+
+# How to use
+
+Build the library and install it to your local Maven repository with `mvn clean install`.
+
+To generate the Jacoco reports and Javadoc, run `mvn clean package javadoc:javadoc`. The Jacoco report is at
+`target/site/jacoco/index.html`, the Javadoc entrypoint is at `target/reports/apidocs/index.html`.
+
 # Project status
 
 ## What's working
