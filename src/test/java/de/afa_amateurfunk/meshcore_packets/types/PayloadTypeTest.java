@@ -22,7 +22,7 @@ class PayloadTypeTest extends AbstractLoggingTest {
      */
     @Test
     void testDataMapping() {
-        // Test that we have exactly three members
+        // Test that we have exactly 13 members
         assertEquals(13, PayloadType.values().length);
         // REQUEST: bitmask 0x00
         assertEquals(0x00, PayloadType.REQUEST.getBitmask());
