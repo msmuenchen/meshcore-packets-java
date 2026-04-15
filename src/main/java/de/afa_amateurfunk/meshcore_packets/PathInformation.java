@@ -21,7 +21,7 @@ public class PathInformation {
      * Parse a packet's path information
      *
      * @param buffer
-     * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/dev/src/Dispatcher.cpp#L164">upstream code</a>
+     * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/dev/src/Dispatcher.cpp#L164">upstream code</a>
      */
     public PathInformation(byte[] buffer) {
         if (buffer.length == 0)

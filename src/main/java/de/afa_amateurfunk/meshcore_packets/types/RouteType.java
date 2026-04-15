@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 /**
  * All four routing types of MeshCore
  *
- * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L14">upstream code</a>
- * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/docs/packet_format.md">upstream doc</a>
+ * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L14">upstream code</a>
+ * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/docs/packet_format.md">upstream doc</a>
  */
 public enum RouteType {
     /**
@@ -59,7 +59,7 @@ public enum RouteType {
      *
      * @param rawByte header byte
      * @return VersionType corresponding to the packet version
-     * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L62">upstream code</a>
+     * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L62">upstream code</a>
      */
     public static RouteType fromHeader(byte rawByte) {
         LOG.trace(String.format("Determining route type from %02x / %s", rawByte, StringUtils.leftPad(Integer.toBinaryString(rawByte & 0xFF), 8, '0')));
@@ -100,7 +100,7 @@ public enum RouteType {
     /**
      * Is this routing done using flood?
      *
-     * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L64">upstream code</a>
+     * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L64">upstream code</a>
      */
     public boolean isFlood() {
         return (this == RouteType.FLOOD || this == RouteType.TRANSPORT_FLOOD);
@@ -109,7 +109,7 @@ public enum RouteType {
     /**
      * Is this routing direct (i.e. repeaters shall answer if they are targeted, otherwise discard)?
      *
-     * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L65">upstream code</a>
+     * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L65">upstream code</a>
      */
     public boolean isDirect() {
         return (this == RouteType.DIRECT || this == RouteType.TRANSPORT_DIRECT);
@@ -118,7 +118,7 @@ public enum RouteType {
     /**
      * Is the routing/handling affected by transport codes?
      *
-     * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L67">upstream code</a>
+     * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L67">upstream code</a>
      */
     public boolean isUsingTransport() {
         return (this == RouteType.TRANSPORT_FLOOD || this == RouteType.TRANSPORT_DIRECT);

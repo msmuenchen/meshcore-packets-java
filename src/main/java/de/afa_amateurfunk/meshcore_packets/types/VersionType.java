@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 /**
  * All version types of MeshCore
  *
- * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L34">upstream code</a>
- * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/docs/packet_format.md">upstream doc</a>
+ * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L34">upstream code</a>
+ * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/docs/packet_format.md">upstream doc</a>
  */
 public enum VersionType {
     /**
@@ -54,7 +54,7 @@ public enum VersionType {
      * @param rawByte header byte
      * @return VersionType corresponding to the packet version
      * @throws java.util.NoSuchElementException when an invalid header byte is encountered
-     * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L77">upstream code</a>
+     * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L77">upstream code</a>
      */
     public static VersionType fromHeader(byte rawByte) throws NoSuchElementException {
         LOG.trace(String.format("Determining version type from %02x / %s", rawByte, StringUtils.leftPad(Integer.toBinaryString(rawByte & 0xFF), 8, '0')));

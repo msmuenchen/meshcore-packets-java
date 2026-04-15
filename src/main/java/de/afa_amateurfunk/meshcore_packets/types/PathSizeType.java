@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 /**
  * Path size information
  *
- * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L79">upstream code</a>
- * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/docs/packet_format.md">upstream doc</a>
+ * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L79">upstream code</a>
+ * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/docs/packet_format.md">upstream doc</a>
  */
 public enum PathSizeType {
     /**
@@ -69,7 +69,7 @@ public enum PathSizeType {
      * @param rawByte header byte
      * @return PathSizeType corresponding to the packet's specification
      * @throws java.util.NoSuchElementException when an invalid header byte is encountered
-     * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L79">upstream code</a>
+     * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L79">upstream code</a>
      */
     public static PathSizeType fromHeader(byte rawByte) throws NoSuchElementException {
         LOG.trace(String.format("Determining path size from %02x / %s", rawByte, StringUtils.leftPad(Integer.toBinaryString(rawByte & 0xFF), 8, '0')));

@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 /**
  * All packet types of MeshCore
  *
- * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L19">upstream code</a>
- * @link <a href="https://github.com/meshcore-dev/MeshCore/blob/main/docs/packet_format.md">upstream doc</a>
+ * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L19">upstream code</a>
+ * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/docs/packet_format.md">upstream doc</a>
  */
 public enum PayloadType {
     /**
