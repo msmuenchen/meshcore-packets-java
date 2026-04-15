@@ -62,6 +62,9 @@ public enum PayloadType {
      * Payload will be Control
      */
     CONTROL(0x0B, "PAYLOAD_TYPE_CONTROL"),
+    /*
+    0x0C, 0x0D, 0x0E omitted, these are RESERVED
+     */
     /**
      * Payload will be Custom
      */
@@ -100,8 +103,8 @@ public enum PayloadType {
      */
     public static PayloadType fromHeader(byte rawByte) throws NoSuchElementException {
         LOG.trace(String.format("Determining payload type from %02x / %s", rawByte, StringUtils.leftPad(Integer.toBinaryString(rawByte & 0xFF), 8, '0')));
-        //LOG.trace(String.format("%s",StringUtils.leftPad(Integer.toBinaryString(((rawByte & 0xFF) >> 2) & 0xFF),8,'0')));
-        PayloadType ret = Stream.of(PayloadType.values()).filter(el -> (((rawByte & 0xFF) >> 2) & 0xFF) == el.bitmask).limit(1).toList().getFirst();
+        LOG.trace(String.format("%s", StringUtils.leftPad(Integer.toBinaryString(((rawByte & 0x3C) >> 2) & 0xFF), 8, '0')));
+        PayloadType ret = Stream.of(PayloadType.values()).filter(el -> (((rawByte & 0x3C) >> 2) & 0xFF) == el.bitmask).limit(1).toList().getFirst();
         LOG.trace("Result: {}", ret.getSpecName());
         return ret;
     }
