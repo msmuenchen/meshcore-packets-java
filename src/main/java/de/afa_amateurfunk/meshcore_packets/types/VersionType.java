@@ -58,8 +58,10 @@ public enum VersionType {
      */
     public static VersionType fromHeader(byte rawByte) throws NoSuchElementException {
         LOG.trace(String.format("Determining version type from %02x / %s", rawByte, StringUtils.leftPad(Integer.toBinaryString(rawByte & 0xFF), 8, '0')));
-        //LOG.trace(String.format("%s",StringUtils.leftPad(Integer.toBinaryString(((rawByte & 0xFF) >> 6) & 0xFF),8,'0')));
-        return Stream.of(VersionType.values()).filter(el -> (((rawByte & 0xFF) >> 6) & 0xFF) == el.bitmask).limit(1).toList().getFirst();
+        //LOG.trace(String.format("%s", StringUtils.leftPad(Integer.toBinaryString(((rawByte & 0xC0) >> 6) & 0xFF), 8, '0')));
+        VersionType ret = Stream.of(VersionType.values()).filter(el -> (((rawByte & 0xC0) >> 6) & 0xFF) == el.bitmask).limit(1).toList().getFirst();
+        LOG.trace("Result: {}", ret.getSpecName());
+        return ret;
     }
 
     /**

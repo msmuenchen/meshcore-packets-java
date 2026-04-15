@@ -63,8 +63,10 @@ public enum RouteType {
      */
     public static RouteType fromHeader(byte rawByte) {
         LOG.trace(String.format("Determining route type from %02x / %s", rawByte, StringUtils.leftPad(Integer.toBinaryString(rawByte & 0xFF), 8, '0')));
-        //LOG.trace(String.format("%s",StringUtils.leftPad(Integer.toBinaryString((rawByte & 0xFF) & 0x03),8,'0')));
-        return Stream.of(RouteType.values()).filter(el -> ((rawByte & 0xFF) & 0x03) == el.bitmask).limit(1).toList().getFirst();
+        //LOG.trace(String.format("%s",StringUtils.leftPad(Integer.toBinaryString((rawByte & 0x03) & 0xFF),8,'0')));
+        RouteType ret = Stream.of(RouteType.values()).filter(el -> ((rawByte & 0x03) & 0xFF) == el.bitmask).limit(1).toList().getFirst();
+        LOG.trace("Result: {}", ret.getSpecName());
+        return ret;
     }
 
     /**
