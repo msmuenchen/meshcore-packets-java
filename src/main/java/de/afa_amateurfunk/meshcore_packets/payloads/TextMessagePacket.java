@@ -2,13 +2,12 @@ package de.afa_amateurfunk.meshcore_packets.payloads;
 
 import de.afa_amateurfunk.meshcore_packets.MeshcorePacket;
 
-public class GrpTxtPacket extends MeshcorePacket {
-
-    public GrpTxtPacket(byte[] buffer) {
+public class TextMessagePacket extends MeshcorePacket {
+    public TextMessagePacket(byte[] buffer) {
 
     }
 
-    public GrpTxtPacket() {
+    public TextMessagePacket() {
 
     }
 

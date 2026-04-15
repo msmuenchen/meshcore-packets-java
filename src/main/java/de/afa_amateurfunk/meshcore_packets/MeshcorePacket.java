@@ -68,8 +68,8 @@ public abstract class MeshcorePacket {
                 case RESPONSE -> {
                     ret = new ResponsePacket();
                 }
-                case TEXT_MSG -> {
-                    ret = new TextMsgPacket();
+                case TEXT_MESSAGE -> {
+                    ret = new TextMessagePacket();
                 }
                 case ACK -> {
                     ret = new AckPacket();
@@ -77,14 +77,14 @@ public abstract class MeshcorePacket {
                 case ADVERT -> {
                     ret = new AdvertPacket();
                 }
-                case GRP_TXT -> {
-                    ret = new GrpTxtPacket();
+                case GROUP_TEXT -> {
+                    ret = new GroupTextPacket();
                 }
-                case GRP_DATA -> {
-                    ret = new GrpDataPacket();
+                case GROUP_DATAGRAM -> {
+                    ret = new GroupDatagramPacket();
                 }
-                case ANON_REQ -> {
-                    ret = new AnonReqPacket();
+                case ANON_REQUEST -> {
+                    ret = new AnonRequestPacket();
                 }
                 case PATH -> {
                     ret = new PathPacket();

@@ -2,13 +2,13 @@ package de.afa_amateurfunk.meshcore_packets.payloads;
 
 import de.afa_amateurfunk.meshcore_packets.MeshcorePacket;
 
-public class GrpDataPacket extends MeshcorePacket {
+public class AnonRequestPacket extends MeshcorePacket {
 
-    public GrpDataPacket(byte[] buffer) {
+    public AnonRequestPacket(byte[] buffer) {
 
     }
 
-    public GrpDataPacket() {
+    public AnonRequestPacket() {
 
     }
 
