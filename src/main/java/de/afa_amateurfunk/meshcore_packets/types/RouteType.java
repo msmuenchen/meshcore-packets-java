@@ -30,10 +30,25 @@ public enum RouteType {
      *
      */
     TRANSPORT_DIRECT(0x03, "ROUTE_TYPE_TRANSPORT_DIRECT");
+    /**
+     * logger
+     */
     private static final Logger LOG = LoggerFactory.getLogger(RouteType.class);
+    /**
+     * bitmask representing this enum's value
+     */
     private final int bitmask;
+    /**
+     * upstream specification name for this enum
+     */
     private final String specName;
 
+    /**
+     * construct a new enum member
+     *
+     * @param bitmask  input bitmask
+     * @param specName input spec-name
+     */
     RouteType(int bitmask, String specName) {
         this.bitmask = bitmask;
         this.specName = specName;
@@ -52,15 +67,30 @@ public enum RouteType {
         return Stream.of(RouteType.values()).filter(el -> ((rawByte & 0xFF) & 0x03) == el.bitmask).limit(1).toList().getFirst();
     }
 
+    /**
+     * pretty-print when someone tries to dump an instance into a string, we fall back to the specification name for recognizability
+     *
+     * @return spec name
+     */
     @Override
     public String toString() {
         return specName;
     }
 
+    /**
+     * get bitmask field
+     *
+     * @return bitmask
+     */
     public int getBitmask() {
         return bitmask;
     }
 
+    /**
+     * get specName field
+     *
+     * @return upstream name
+     */
     public String getSpecName() {
         return specName;
     }
