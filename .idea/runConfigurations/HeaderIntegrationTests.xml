@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="HeaderTests" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+  <configuration default="false" name="HeaderIntegrationTests" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
     <module name="meshcore_packets_java" />
     <extension name="coverage" runner="jacoco">
       <pattern>
@@ -12,8 +12,8 @@
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="PACKAGE_NAME" value="" />
-    <option name="MAIN_CLASS_NAME" value="HeaderTests" />
+    <option name="PACKAGE_NAME" value="de.afa_amateurfunk.meshcore_packets" />
+    <option name="MAIN_CLASS_NAME" value="de.afa_amateurfunk.meshcore_packets.HeaderIntegrationTests" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="class" />
     <option name="VM_PARAMETERS" value="-ea -Dmaven.surefire.debug" />

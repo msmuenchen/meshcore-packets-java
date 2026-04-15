@@ -1,36 +1,20 @@
-import de.afa_amateurfunk.meshcore_packets.MeshcorePacket;
+package de.afa_amateurfunk.meshcore_packets;
+
 import de.afa_amateurfunk.meshcore_packets.exceptions.ParseErrorException;
 import de.afa_amateurfunk.meshcore_packets.payloads.ControlPacket;
 import de.afa_amateurfunk.meshcore_packets.payloads.RawCustomPacket;
 import de.afa_amateurfunk.meshcore_packets.types.RouteType;
 import de.afa_amateurfunk.meshcore_packets.types.VersionType;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-public class HeaderTests {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(HeaderTests.class);
-
-    /**
-     * Initialize JUL to log everything so we can see logs of failed test cases
-     */
-    @BeforeAll
-    static void setupLogging() {
-        // This does not work, probably because JUL already has been initialized somewhere in the invocation
-        //System.setProperty("java.util.logging.config.file", ClassLoader.getSystemResource("logging.properties").getPath());
-        Logger rootLogger = LogManager.getLogManager().getLogger("");
-        rootLogger.setLevel(Level.ALL);
-        for (Handler h : rootLogger.getHandlers()) {
-            h.setLevel(Level.ALL);
-        }
-    }
+/**
+ * Integration tests tying all of the individual superstructure parsers together
+ */
+public class HeaderIntegrationTests extends AbstractLoggingTest {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(HeaderIntegrationTests.class);
 
     /**
      * Testcase for a completely empty packet
