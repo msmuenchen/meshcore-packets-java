@@ -82,17 +82,24 @@ repeated anyway.
 
 At the moment, MeshCore supports 13 different payload types:
 
-* Request (`REQ`) / Anonymous Request (`ANON_REQ`) / Response (`RESPONSE`): used to request configuration and telemetry
+* [Request (`REQ`) / Anonymous Request (`ANON_REQ`) / Response (
+  `RESPONSE`): used to request configuration and telemetry](packet-format-request-response.md)
   from another node
-* Text Message (`TXT_MSG`) / Ack (`ACK`): a message between two MeshCore nodes that has confirmed delivery for the
+* [Text Message (`TXT_MSG`) / Ack (`ACK`)](packet-format-textmessage.md): a message between two MeshCore nodes that has
+  confirmed delivery for the
   sender
-* Advert (`ADVERT`): a packet detailing at least a node's type, name and full public key. Optionally, the node's
+* [Advert (`ADVERT`)](packet-format-advert.md): a packet detailing at least a node's type, name and full public key.
+  Optionally, the node's
   location (latitude and longitude) can be transmitted as well.
-* Group Text (`GRP_TXT`) / Group Datagram (`GRP_DATA`): used for the text channels (private channels, hashtag
+* [Group Text (`GRP_TXT`) / Group Datagram (`GRP_DATA`)](packet-format-group.md): used for the text channels (private
+  channels, hashtag
   channels and the Public channel). Unlike Text Message, there is no confirmation of delivery and "silent" losses along
   the path are expected!
-* Path (`PATH`) and Trace (`TRACE`): link discovery, tracing and troubleshooting
-* Multipart (`MULTIPART`): allows for extended packets going beyond the 184 byte payload limit
-* Control (`CONTROL`): zero-hop discovery of neighbor nodes
-* Raw Custom (`RAW_CUSTOM`): application-defined payloads. Used for third-party applications leveraging MeshCore's
+* [Path (`PATH`)](packet-format-path.md) / [Trace (`TRACE`)](packet-format-trace.md): link discovery, tracing and
+  troubleshooting
+* [Multipart (`MULTIPART`)](packet-format-multipart.md): allows for extended packets going beyond the 184 byte payload
+  limit
+* [Control (`CONTROL`)](packet-format-control.md): zero-hop discovery of neighbor nodes
+* [Raw Custom (`RAW_CUSTOM`)](packet-format-rawcustom.md): application-defined payloads. Used for third-party
+  applications leveraging MeshCore's
   network and routing.
