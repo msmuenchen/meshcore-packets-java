@@ -83,7 +83,7 @@ repeated anyway.
 At the moment, MeshCore supports 13 different payload types:
 
 * [Request (`REQ`) / Anonymous Request (`ANON_REQ`) / Response (
-  `RESPONSE`): used to request configuration and telemetry](packet-format-request-response.md)
+  `RESPONSE`)](packet-format-request-response.md): used to request configuration and telemetry
   from another node
 * [Text Message (`TXT_MSG`) / Ack (`ACK`)](packet-format-textmessage.md): a message between two MeshCore nodes that has
   confirmed delivery for the
