@@ -12,14 +12,15 @@ public class GroupDatagramPacket extends MeshcorePacket {
      * @param buffer byte buffer (payload only, no header!)
      */
     public GroupDatagramPacket(byte[] buffer) {
-
+        super();
+        parsePayload(buffer);
     }
 
     /**
      * Construct a packet from scratch
      */
     public GroupDatagramPacket() {
-
+        super();
     }
 
     /**
@@ -29,6 +30,6 @@ public class GroupDatagramPacket extends MeshcorePacket {
      */
     @Override
     public void parsePayload(byte[] payloadBuffer) {
-
+        this.payloadBuffer = payloadBuffer;
     }
 }

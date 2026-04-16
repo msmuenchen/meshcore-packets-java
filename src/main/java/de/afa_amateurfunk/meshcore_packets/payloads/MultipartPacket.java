@@ -12,14 +12,15 @@ public class MultipartPacket extends MeshcorePacket {
      * @param buffer byte buffer (payload only, no header!)
      */
     public MultipartPacket(byte[] buffer) {
-
+        super();
+        parsePayload(buffer);
     }
 
     /**
      * Construct a packet from scratch
      */
     public MultipartPacket() {
-
+        super();
     }
 
     /**
@@ -29,7 +30,6 @@ public class MultipartPacket extends MeshcorePacket {
      */
     @Override
     public void parsePayload(byte[] payloadBuffer) {
-
-
+        this.payloadBuffer = payloadBuffer;
     }
 }

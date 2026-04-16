@@ -12,13 +12,15 @@ public class AckPacket extends MeshcorePacket {
      * @param buffer byte buffer (payload only, no header!)
      */
     public AckPacket(byte[] buffer) {
+        super();
+        parsePayload(buffer);
     }
 
     /**
      * Construct a packet from scratch
      */
     public AckPacket() {
-
+        super();
     }
 
     /**
@@ -28,6 +30,6 @@ public class AckPacket extends MeshcorePacket {
      */
     @Override
     public void parsePayload(byte[] payloadBuffer) {
-
+        this.payloadBuffer = payloadBuffer;
     }
 }

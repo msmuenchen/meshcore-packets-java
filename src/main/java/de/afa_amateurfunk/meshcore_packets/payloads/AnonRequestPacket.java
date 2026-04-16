@@ -12,14 +12,15 @@ public class AnonRequestPacket extends MeshcorePacket {
      * @param buffer byte buffer (payload only, no header!)
      */
     public AnonRequestPacket(byte[] buffer) {
-
+        super();
+        parsePayload(buffer);
     }
 
     /**
      * Construct a packet from scratch
      */
     public AnonRequestPacket() {
-
+        super();
     }
 
     /**
@@ -29,6 +30,6 @@ public class AnonRequestPacket extends MeshcorePacket {
      */
     @Override
     public void parsePayload(byte[] payloadBuffer) {
-
+        this.payloadBuffer = payloadBuffer;
     }
 }

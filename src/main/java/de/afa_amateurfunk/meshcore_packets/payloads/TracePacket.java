@@ -12,14 +12,15 @@ public class TracePacket extends MeshcorePacket {
      * @param buffer byte buffer (payload only, no header!)
      */
     public TracePacket(byte[] buffer) {
-
+        super();
+        parsePayload(buffer);
     }
 
     /**
      * Construct a packet from scratch
      */
     public TracePacket() {
-
+        super();
     }
 
     /**
@@ -29,6 +30,6 @@ public class TracePacket extends MeshcorePacket {
      */
     @Override
     public void parsePayload(byte[] payloadBuffer) {
-
+        this.payloadBuffer = payloadBuffer;
     }
 }

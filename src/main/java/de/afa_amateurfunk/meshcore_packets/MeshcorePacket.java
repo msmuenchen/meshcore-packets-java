@@ -178,8 +178,7 @@ public abstract class MeshcorePacket {
             if (buffer.length - payloadStart > 184) {
                 throw new ParseErrorException("Packet has too long payload");
             } else if (buffer.length - payloadStart > 0) {
-                ret.payloadBuffer = Arrays.copyOfRange(buffer, payloadStart, buffer.length);
-                ret.parsePayload(ret.payloadBuffer);
+                ret.parsePayload(Arrays.copyOfRange(buffer, payloadStart, buffer.length));
             }
             LOG.trace("Finished parsing packet: {}", ret);
             return ret;
@@ -187,10 +186,6 @@ public abstract class MeshcorePacket {
             LOG.warn("Failed to parse packet", e);
             throw e;
         }
-    }
-
-    public void parsePayload() {
-        parsePayload(this.payloadBuffer);
     }
 
     /**

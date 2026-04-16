@@ -13,14 +13,15 @@ public class RawCustomPacket extends MeshcorePacket {
      * @param buffer byte buffer (payload only, no header!)
      */
     public RawCustomPacket(byte[] buffer) {
-
+        super();
+        parsePayload(buffer);
     }
 
     /**
      * Construct a packet from scratch
      */
     public RawCustomPacket() {
-
+        super();
     }
 
     /**
@@ -30,6 +31,6 @@ public class RawCustomPacket extends MeshcorePacket {
      */
     @Override
     public void parsePayload(byte[] payloadBuffer) {
-
+        this.payloadBuffer = payloadBuffer;
     }
 }

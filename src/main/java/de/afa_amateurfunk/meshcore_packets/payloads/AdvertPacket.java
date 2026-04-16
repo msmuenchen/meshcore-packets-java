@@ -12,14 +12,15 @@ public class AdvertPacket extends MeshcorePacket {
      * @param buffer byte buffer (payload only, no header!)
      */
     public AdvertPacket(byte[] buffer) {
-
+        super();
+        parsePayload(buffer);
     }
 
     /**
      * Construct a packet from scratch
      */
     public AdvertPacket() {
-
+        super();
     }
 
     /**
@@ -29,6 +30,6 @@ public class AdvertPacket extends MeshcorePacket {
      */
     @Override
     public void parsePayload(byte[] payloadBuffer) {
-
+        this.payloadBuffer = payloadBuffer;
     }
 }

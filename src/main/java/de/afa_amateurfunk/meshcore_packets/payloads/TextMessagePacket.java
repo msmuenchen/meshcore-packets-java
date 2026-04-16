@@ -12,14 +12,15 @@ public class TextMessagePacket extends MeshcorePacket {
      * @param buffer byte buffer (payload only, no header!)
      */
     public TextMessagePacket(byte[] buffer) {
-
+        super();
+        parsePayload(buffer);
     }
 
     /**
      * Construct a packet from scratch
      */
     public TextMessagePacket() {
-
+        super();
     }
 
     /**
@@ -29,6 +30,6 @@ public class TextMessagePacket extends MeshcorePacket {
      */
     @Override
     public void parsePayload(byte[] payloadBuffer) {
-
+        this.payloadBuffer = payloadBuffer;
     }
 }

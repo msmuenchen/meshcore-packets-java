@@ -12,14 +12,15 @@ public class ControlPacket extends MeshcorePacket {
      * @param buffer byte buffer (payload only, no header!)
      */
     public ControlPacket(byte[] buffer) {
-
+        super();
+        parsePayload(buffer);
     }
 
     /**
      * Construct a packet from scratch
      */
     public ControlPacket() {
-
+        super();
     }
 
     /**
@@ -29,6 +30,6 @@ public class ControlPacket extends MeshcorePacket {
      */
     @Override
     public void parsePayload(byte[] payloadBuffer) {
-
+        this.payloadBuffer = payloadBuffer;
     }
 }
