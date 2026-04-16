@@ -100,6 +100,7 @@ public enum RouteType {
     /**
      * Is this routing done using flood?
      *
+     * @return true if packet is using flood routing, false otherwise
      * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L64">upstream code</a>
      */
     public boolean isFlood() {
@@ -109,6 +110,7 @@ public enum RouteType {
     /**
      * Is this routing direct (i.e. repeaters shall answer if they are targeted, otherwise discard)?
      *
+     * @return true if packet is using direct routing, false otherwise
      * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L65">upstream code</a>
      */
     public boolean isDirect() {
@@ -118,6 +120,7 @@ public enum RouteType {
     /**
      * Is the routing/handling affected by transport codes?
      *
+     * @return true if packet is equipped with transport codes, false otherwise
      * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L67">upstream code</a>
      */
     public boolean isUsingTransport() {

@@ -11,19 +11,54 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.HexFormat;
 
-
+/**
+ * Superclass for all Java representations of a Meshcore packet
+ */
 public abstract class MeshcorePacket {
+    /**
+     * logger
+     */
     private static final Logger LOG = LoggerFactory.getLogger(MeshcorePacket.class);
+    /**
+     * class-wide instance of hex formatter
+     */
     protected static HexFormat hexFormat = HexFormat.of();
+    /**
+     * representation of a packet's version bitfield
+     */
     protected VersionType packetVersion;
+    /**
+     * representation of a packet's payload bitfield
+     */
     protected PayloadType packetPayloadType;
+    /**
+     * representation of a packet's routing bitfield
+     */
     protected RouteType packetRouting;
+    /**
+     * a packet's raw transport codes
+     * TODO refactor this once we actually are able to math with this?
+     */
     protected byte[][] transportCodes;
+    /**
+     * representation of a packet's path information (hop size, hop count and hops)
+     */
     protected PathInformation packetPathInformation;
+    /**
+     * the full packet in raw byte form
+     */
     protected byte[] fullData;
+    /**
+     * the packet's payload part in raw byte form, to be used by implementing classes
+     */
     protected byte[] payloadBuffer;
 
+    /**
+     * empty constructor. Need it to silence Javadoc
+     * TODO check if we can actually use this from subclass constructors to initialize all the various fields when constructing a packet from scratch?
+     */
     public MeshcorePacket() {
+
     }
 
     /**
@@ -158,64 +193,147 @@ public abstract class MeshcorePacket {
         parsePayload(this.payloadBuffer);
     }
 
+    /**
+     * parse a payload buffer and set all applicable internal fields, to be implemented by subclasses
+     *
+     * @param payloadBuffer byte buffer (payload only, no header!)
+     */
     public abstract void parsePayload(byte[] payloadBuffer);
 
+    /**
+     * getter for packetVersion field
+     *
+     * @return packetVersion field
+     */
     public VersionType getPacketVersion() {
         return packetVersion;
     }
 
+    /**
+     * setter for packetVersion field
+     *
+     * @param packetVersion new value
+     */
     public void setPacketVersion(VersionType packetVersion) {
         this.packetVersion = packetVersion;
     }
 
+    /**
+     * getter for packetRouting field
+     *
+     * @return packetRouting field
+     */
     public RouteType getPacketRouting() {
         return packetRouting;
     }
 
+    /**
+     * setter for packetRouting field
+     *
+     * @param packetRouting new value
+     */
     public void setPacketRouting(RouteType packetRouting) {
         this.packetRouting = packetRouting;
     }
 
+    /**
+     * getter for packetPathInformation field
+     *
+     * @return packetPathInformation field
+     */
     public PathInformation getPacketPathInformation() {
         return packetPathInformation;
     }
 
+    /**
+     * setter for packetPathInformation field
+     *
+     * @param packetPathInformation new value
+     */
     public void setPacketPathInformation(PathInformation packetPathInformation) {
         this.packetPathInformation = packetPathInformation;
     }
 
+    /**
+     * getter for packetPayloadType field
+     *
+     * @return packetPayloadType field
+     */
     public PayloadType getPacketPayloadType() {
         return packetPayloadType;
     }
 
+    /**
+     * setter for packetPayloadType field
+     *
+     * @param packetPayloadType new value
+     */
     public void setPacketPayloadType(PayloadType packetPayloadType) {
         this.packetPayloadType = packetPayloadType;
     }
 
+    /**
+     * getter for transportCodes field
+     *
+     * @return transportCodes field
+     */
     public byte[][] getTransportCodes() {
         return transportCodes;
     }
 
+    /**
+     * setter for transportCodes field
+     *
+     * @param transportCodes new value
+     */
     public void setTransportCodes(byte[][] transportCodes) {
         this.transportCodes = transportCodes;
     }
 
+    /**
+     * getter for fullData field
+     * TODO refactor this, should trigger a rebuild from all representation fields
+     *
+     * @return fullData field
+     */
     public byte[] getFullData() {
         return fullData;
     }
 
+    /**
+     * setter for fullData field
+     * TODO refactor this, should trigger fromBytes logic? can we even do this?
+     *
+     * @param fullData new value
+     */
     public void setFullData(byte[] fullData) {
         this.fullData = fullData;
     }
 
+    /**
+     * getter for payloadBuffer field
+     *
+     * @return payloadBuffer field
+     */
     public byte[] getPayloadBuffer() {
         return payloadBuffer;
     }
 
+    /**
+     * setter for payloadBuffer field
+     * TODO check if we can actually do this or if we rather have to go for the subclasses?
+     *
+     * @param payloadBuffer raw buffer
+     */
     public void setPayloadBuffer(byte[] payloadBuffer) {
         this.payloadBuffer = payloadBuffer;
     }
 
+    /**
+     * for debug output
+     *
+     * @return string representation of packet's information
+     */
     @Override
     public String toString() {
         return "MeshcorePacket{" +

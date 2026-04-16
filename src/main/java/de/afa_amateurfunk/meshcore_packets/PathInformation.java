@@ -9,18 +9,37 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.HexFormat;
 
+/**
+ * Class representing a packet's full path info (header + hops)
+ */
 public class PathInformation {
+    /**
+     * logger
+     */
     private static final Logger LOG = LoggerFactory.getLogger(PathInformation.class);
+    /**
+     * class-wide instance of hex formatter
+     */
     protected static HexFormat hexFormat = HexFormat.of();
+    /**
+     * information about the hash length and number of hops
+     */
     protected PathSizeType packetPathSize;
     protected int hopCount = 0;
+    /**
+     * Individual hops
+     */
     protected byte[][] packetHops;
+    /**
+     * Buffer containing the packet hops.
+     * TODO refactor this to avoid having duplicate information. For now we need it for calculations in {@link MeshcorePacket#fromBytes(byte[])}
+     */
     protected byte[] pathBuffer = new byte[0];
 
     /**
      * Parse a packet's path information
      *
-     * @param buffer
+     * @param buffer entire packet starting with the first byte of path info (=path header byte)
      * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/dev/src/Dispatcher.cpp#L164">upstream code</a>
      */
     public PathInformation(byte[] buffer) {
@@ -49,10 +68,20 @@ public class PathInformation {
         }
     }
 
+    /**
+     * get the buffer for the path bytes (without header byte)
+     *
+     * @return buffer for the path bytes (without header byte)
+     */
     public byte[] getPathBuffer() {
         return pathBuffer;
     }
 
+    /**
+     * internal helper to serialize the packet hops array to something readable by humans
+     *
+     * @return string representation of hops
+     */
     private String serializePacketHops() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("%d[", this.packetHops.length));
@@ -65,6 +94,11 @@ public class PathInformation {
         return sb.toString();
     }
 
+    /**
+     * for debug output
+     *
+     * @return string representation of packet's path information
+     */
     @Override
     public String toString() {
         return "PathInformation{" +
