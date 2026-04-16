@@ -25,7 +25,6 @@ public class PathInformation {
      * information about the hash length and number of hops
      */
     protected PathSizeType packetPathSize;
-    protected int hopCount = 0;
     /**
      * Individual hops
      */
@@ -53,16 +52,16 @@ public class PathInformation {
          * Mask out only the lower 6 bits, the upper 2 bits are used for the size
          * @link https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.h#L80
          */
-        this.hopCount = pathHeader & 0x3F;
-        this.packetHops = new byte[this.hopCount][];
-        LOG.trace(String.format("%d hops", this.hopCount));
-        if (this.hopCount == 0)
+        int hopCount = pathHeader & 0x3F;
+        this.packetHops = new byte[hopCount][];
+        LOG.trace(String.format("%d hops", hopCount));
+        if (hopCount == 0)
             return;
-        if (buffer.length < 1 + (this.packetPathSize.getBytesPerHop() * this.hopCount))
+        if (buffer.length < 1 + (this.packetPathSize.getBytesPerHop() * hopCount))
             throw new ParseErrorException("Packet does not contain enough bytes to store all hops, appears to be cut off");
-        pathBuffer = Arrays.copyOfRange(buffer, 1, 1 + (this.packetPathSize.getBytesPerHop() * this.hopCount));
+        pathBuffer = Arrays.copyOfRange(buffer, 1, 1 + (this.packetPathSize.getBytesPerHop() * hopCount));
         LOG.trace(String.format("Determining hops from %s with %d bytes per hop", hexFormat.formatHex(pathBuffer), this.packetPathSize.getBytesPerHop()));
-        for (int i = 0; i < this.hopCount; i++) {
+        for (int i = 0; i < hopCount; i++) {
             this.packetHops[i] = Arrays.copyOfRange(buffer, 1 + (i * this.packetPathSize.getBytesPerHop()), 1 + (i * this.packetPathSize.getBytesPerHop()) + this.packetPathSize.getBytesPerHop());
             LOG.trace(String.format("Recorded hop %s", StringUtils.leftPad(hexFormat.formatHex(this.packetHops[i]), this.packetPathSize.getBytesPerHop() * 2, '0')));
         }
