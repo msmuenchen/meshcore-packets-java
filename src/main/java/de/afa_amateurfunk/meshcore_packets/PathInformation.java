@@ -79,6 +79,35 @@ public class PathInformation {
     }
 
     /**
+     * get hop count
+     *
+     * @return hop count
+     */
+    public int getHopCount() {
+        return packetHops.length;
+    }
+
+    /**
+     * return path size
+     *
+     * @return PathSizeType corresponding to bytes-per-hop
+     */
+    public PathSizeType getPacketPathSize() {
+        return this.packetPathSize;
+    }
+
+    /**
+     * get a single hop
+     *
+     * @param index index of hop
+     * @return hop ID
+     */
+    public byte[] getHop(int index) {
+        LOG.trace(String.format("Getting hop %d", index));
+        return packetHops[index];
+    }
+
+    /**
      * internal helper to serialize the packet hops array to something readable by humans
      *
      * @return string representation of hops
