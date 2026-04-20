@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @see VersionType
  */
-class VersionTypeTest extends AbstractLoggingTest {
+public class VersionTypeTest extends AbstractLoggingTest {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(VersionTypeTest.class);
 
     /**

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class PathSizeTypeTest extends AbstractLoggingTest {
+public class PathSizeTypeTest extends AbstractLoggingTest {
     /**
      * Test that the data repository is correctly represented
      */
@@ -51,7 +51,7 @@ class PathSizeTypeTest extends AbstractLoggingTest {
      * Test that the parser rejects invalid cases (bitmask 0x04 is marked RESERVED upstream)
      */
     @Test
-    void testHeaderParseRejectReserved() {
+    public void testHeaderParseRejectReserved() {
         byte headerByte = (byte) (0x00 | ((byte) 0x03 << 6));
         for (int j = 0; j < 64; j++) {
             byte testByte = (byte) (headerByte | j);

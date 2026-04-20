@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @see PayloadType
  */
-class PayloadTypeTest extends AbstractLoggingTest {
+public class PayloadTypeTest extends AbstractLoggingTest {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(PayloadTypeTest.class);
 
     /**

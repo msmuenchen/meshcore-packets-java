@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @see RouteType
  */
-class RouteTypeTest extends AbstractLoggingTest {
+public class RouteTypeTest extends AbstractLoggingTest {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RouteTypeTest.class);
 
     /**
