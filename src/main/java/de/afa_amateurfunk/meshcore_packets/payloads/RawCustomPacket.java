@@ -1,6 +1,7 @@
 package de.afa_amateurfunk.meshcore_packets.payloads;
 
 import de.afa_amateurfunk.meshcore_packets.MeshcorePacket;
+import de.afa_amateurfunk.meshcore_packets.types.PayloadType;
 
 /**
  * Raw Custom packet
@@ -22,6 +23,8 @@ public class RawCustomPacket extends MeshcorePacket {
      */
     public RawCustomPacket() {
         super();
+        packetPayloadType = PayloadType.RAW_CUSTOM;
+        payloadBuffer = new byte[0];
     }
 
     /**
