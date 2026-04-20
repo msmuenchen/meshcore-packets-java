@@ -58,7 +58,10 @@ public abstract class MeshcorePacket {
      * TODO check if we can actually use this from subclass constructors to initialize all the various fields when constructing a packet from scratch?
      */
     public MeshcorePacket() {
-
+        setPacketVersion(VersionType.VER_1);
+        setPacketRouting(RouteType.DIRECT);
+        PathInformation pi = new PathInformation();
+        setPacketPathInformation(pi);
     }
 
     /**
