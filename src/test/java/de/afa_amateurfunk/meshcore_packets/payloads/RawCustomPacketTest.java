@@ -69,6 +69,34 @@ public class RawCustomPacketTest extends AbstractLoggingTest {
     }
 
     /**
+     * Construct a RawCustomPacket from scratch with existing payload
+     */
+    @Test
+    public void testCreateFromScratchWithPayloadString() {
+        RawCustomPacket packet = new RawCustomPacket("AABBCCDDEEFF");
+        assertEquals(VersionType.VER_1, packet.getPacketVersion());
+        assertEquals(RouteType.DIRECT, packet.getPacketRouting());
+        assertEquals(PayloadType.RAW_CUSTOM, packet.getPacketPayloadType());
+        assertEquals(PathSizeType.SIZE_1, packet.getPacketPathInformation().getPacketPathSize());
+        assertEquals(0, packet.getPacketPathInformation().getHopCount());
+        assertArrayEquals(new byte[]{(byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD, (byte) 0xEE, (byte) 0xFF}, packet.getPayloadBuffer());
+    }
+
+    /**
+     * Construct a RawCustomPacket from scratch with existing payload
+     */
+    @Test
+    public void testCreateFromScratchWithPayloadByteArray() {
+        RawCustomPacket packet = new RawCustomPacket(hexFormat.parseHex("AABBCCDDEEFF"));
+        assertEquals(VersionType.VER_1, packet.getPacketVersion());
+        assertEquals(RouteType.DIRECT, packet.getPacketRouting());
+        assertEquals(PayloadType.RAW_CUSTOM, packet.getPacketPayloadType());
+        assertEquals(PathSizeType.SIZE_1, packet.getPacketPathInformation().getPacketPathSize());
+        assertEquals(0, packet.getPacketPathInformation().getHopCount());
+        assertArrayEquals(new byte[]{(byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD, (byte) 0xEE, (byte) 0xFF}, packet.getPayloadBuffer());
+    }
+
+    /**
      * Test setting payload data on a blank packet
      */
     @Test
