@@ -39,11 +39,13 @@ public class PathInformation {
      * Parse a packet's path information
      *
      * @param buffer entire packet starting with the first byte of path info (=path header byte)
+     * @throws ParseErrorException in case of an invalid packet
      * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/dev/src/Dispatcher.cpp#L164">upstream code</a>
      */
-    public PathInformation(byte[] buffer) {
+    public PathInformation(byte[] buffer) throws ParseErrorException {
         if (buffer.length == 0)
             throw new ParseErrorException("Attempted to parse path information on empty buffer");
+        LOG.trace("Attempting to parse buffer of {} bytes for path information: '{}'", buffer.length, hexFormat.formatHex(buffer));
         byte pathHeader = buffer[0];
         LOG.trace(String.format("Determining path size from %02x / %s", pathHeader, StringUtils.leftPad(Integer.toBinaryString(pathHeader & 0xFF), 8, '0')));
         this.packetPathSize = PathSizeType.fromHeader(pathHeader);
