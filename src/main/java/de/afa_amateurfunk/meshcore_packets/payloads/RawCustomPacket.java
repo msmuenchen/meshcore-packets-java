@@ -15,7 +15,19 @@ public class RawCustomPacket extends MeshcorePacket {
      */
     public RawCustomPacket(byte[] buffer) {
         super();
+        packetPayloadType = PayloadType.RAW_CUSTOM;
         parsePayload(buffer);
+    }
+
+    /**
+     * Construct an instance with a pre-supplied payload buffer
+     *
+     * @param buffer byte buffer as hex string (payload only, no header!)
+     */
+    public RawCustomPacket(String buffer) {
+        super();
+        packetPayloadType = PayloadType.RAW_CUSTOM;
+        parsePayload(hexFormat.parseHex(buffer));
     }
 
     /**
@@ -24,7 +36,7 @@ public class RawCustomPacket extends MeshcorePacket {
     public RawCustomPacket() {
         super();
         packetPayloadType = PayloadType.RAW_CUSTOM;
-        payloadBuffer = new byte[0];
+        setPayloadBuffer(new byte[0]);
     }
 
     /**
@@ -34,6 +46,6 @@ public class RawCustomPacket extends MeshcorePacket {
      */
     @Override
     public void parsePayload(byte[] payloadBuffer) {
-        this.payloadBuffer = payloadBuffer;
+        setPayloadBuffer(payloadBuffer);
     }
 }

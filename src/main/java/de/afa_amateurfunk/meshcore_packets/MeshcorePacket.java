@@ -323,7 +323,7 @@ public abstract class MeshcorePacket {
      *
      * @param payloadBuffer raw buffer
      */
-    public void setPayloadBuffer(byte[] payloadBuffer) {
+    protected void setPayloadBuffer(byte[] payloadBuffer) {
         this.payloadBuffer = payloadBuffer;
     }
 
