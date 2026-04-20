@@ -290,4 +290,14 @@ public class PathInformationTest extends AbstractLoggingTest {
             assertThrows(ParseErrorException.class, () -> new PathInformation(Arrays.copyOfRange(buffer, 0, buffer.length - 3)));
         }
     }
+
+    /**
+     * Test creating a PathInformation from scratch
+     */
+    @Test
+    public void testCreateFromScratch() {
+        PathInformation pi = new PathInformation();
+        assertEquals(PathSizeType.SIZE_1, pi.getPacketPathSize());
+        assertEquals(0, pi.getHopCount());
+    }
 }

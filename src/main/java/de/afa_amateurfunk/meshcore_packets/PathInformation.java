@@ -36,6 +36,16 @@ public class PathInformation {
     protected byte[] pathBuffer = new byte[0];
 
     /**
+     * Empty/from-scratch constructor
+     */
+    public PathInformation() {
+        LOG.trace("Creating new PathInformation");
+        packetPathSize = PathSizeType.SIZE_1;
+        packetHops = new byte[0][];
+        pathBuffer = new byte[0];
+    }
+
+    /**
      * Parse a packet's path information
      *
      * @param buffer entire packet starting with the first byte of path info (=path header byte)
