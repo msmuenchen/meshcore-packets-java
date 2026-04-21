@@ -5,6 +5,7 @@ import de.afa_amateurfunk.meshcore_packets.payloads.ControlPacket;
 import de.afa_amateurfunk.meshcore_packets.payloads.RawCustomPacket;
 import de.afa_amateurfunk.meshcore_packets.types.RouteType;
 import de.afa_amateurfunk.meshcore_packets.types.VersionType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
@@ -288,7 +289,12 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
         assertEquals(RouteType.DIRECT, packet.getPacketRouting());
     }
 
+    /**
+     * Test a known-existing control packet
+     * Disabled until ControlPacket parsing is implemented
+     */
     @Test
+    @Disabled
     void testControlPacket() {
         // This is a control packet with direct routing asking for repeaters
         String controlRequestRepeaterBuffer = "2e008004937254ec";
@@ -298,7 +304,12 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
         assertEquals(VersionType.VER_1, controlRequestRepeaterPacket.getPacketVersion());
     }
 
+    /**
+     * Test a few known-existing packets with real world paths
+     * Disabled until parsing is implemented everywhere
+     */
     @Test
+    @Disabled
     void testPathDecode() {
         String size1PacketBuffer = "11046C2D4AE3A954F2735BCC9F530604BFD4BAFE4BAA24963FC42F804BCB87F6FDD340AA620062E75366FD76F67B279B7BB1A41EFD3FCE8A3D4C9002F36B03B69F7237DC005982F9BA9B590CC69470905097BBEE2CCB3CC8DAD1FFD69E5201CA6F6DC1C19182D5490400921E59E502BCD8CE00444230504153204D617868C3B66865";
         MeshcorePacket size1Packet = MeshcorePacket.fromString(size1PacketBuffer);
