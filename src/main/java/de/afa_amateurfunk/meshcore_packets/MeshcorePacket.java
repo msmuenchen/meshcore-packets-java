@@ -196,6 +196,13 @@ public abstract class MeshcorePacket {
     public abstract void parsePayload(byte[] payloadBuffer);
 
     /**
+     * return the packet's payload buffer representing the current state of the packet
+     *
+     * @return full byte buffer
+     */
+    public abstract byte[] getPayloadBuffer();
+
+    /**
      * getter for packetVersion field
      *
      * @return packetVersion field

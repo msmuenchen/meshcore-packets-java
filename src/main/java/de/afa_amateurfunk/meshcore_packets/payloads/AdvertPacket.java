@@ -29,7 +29,7 @@ public class AdvertPacket extends MeshcorePacket {
      * @param payloadBuffer byte buffer (payload only, no header!)
      */
     @Override
-    public void parsePayload(byte[] payloadBuffer) {
-        this.payloadBuffer = payloadBuffer;
+    public byte[] getPayloadBuffer() {
+        throw new NotImplementedException();
     }
 }

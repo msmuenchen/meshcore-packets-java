@@ -33,4 +33,14 @@ public class TracePacket extends MeshcorePacket {
     public void parsePayload(byte[] payloadBuffer) {
         throw new NotImplementedException();
     }
+
+    /**
+     * return the packet's payload buffer representing the current state of the packet
+     *
+     * @return full byte buffer
+     */
+    @Override
+    public byte[] getPayloadBuffer() {
+        throw new NotImplementedException();
+    }
 }
