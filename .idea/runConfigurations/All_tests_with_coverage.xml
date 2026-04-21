@@ -1,0 +1,25 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="All tests with coverage" type="JUnit" factoryName="JUnit">
+    <module name="meshcore_packets_java" />
+    <extension name="coverage" runner="jacoco">
+      <pattern>
+        <option name="PATTERN" value="de.afa_amateurfunk.meshcore_packets.exceptions.*" />
+        <option name="ENABLED" value="true" />
+        <option name="INCLUDE" value="false" />
+      </pattern>
+      <pattern>
+        <option name="PATTERN" value="de.afa_amateurfunk.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="PACKAGE_NAME" value="de.afa_amateurfunk.meshcore_packets" />
+    <option name="MAIN_CLASS_NAME" value="" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="directory" />
+    <option name="VM_PARAMETERS" value="-ea -Dmaven.surefire.debug" />
+    <dir value="$PROJECT_DIR$/src/test/java" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -67,7 +67,6 @@ public class RawCustomPacket extends MeshcorePacket {
 
     /**
      * setter for payloadBuffer field
-     * TODO check if we can actually do this or if we rather have to go for the subclasses?
      *
      * @param payloadBuffer raw buffer
      */
