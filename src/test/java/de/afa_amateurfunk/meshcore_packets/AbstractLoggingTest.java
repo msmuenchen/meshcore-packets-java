@@ -2,6 +2,7 @@ package de.afa_amateurfunk.meshcore_packets;
 
 import org.junit.jupiter.api.BeforeAll;
 
+import java.util.HexFormat;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -16,6 +17,11 @@ import java.util.logging.Logger;
  * @author Marco Schuschnig
  */
 public abstract class AbstractLoggingTest {
+    /**
+     * class-wide instance of hex formatter. used in enough tests to make it worth being shared
+     */
+    protected static HexFormat hexFormat = HexFormat.of();
+
     /**
      * Initialize JUL to log everything so we can see logs of failed test cases
      */

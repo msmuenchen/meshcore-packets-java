@@ -9,8 +9,6 @@ import de.afa_amateurfunk.meshcore_packets.types.VersionType;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import java.util.HexFormat;
-
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,10 +22,6 @@ public class RawCustomPacketTest extends AbstractLoggingTest {
      * logger
      */
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RawCustomPacketTest.class);
-    /**
-     * class-wide instance of hex formatter
-     */
-    protected static HexFormat hexFormat = HexFormat.of();
 
     /**
      * Test decoding of a completely empty packet. Pointless but legal

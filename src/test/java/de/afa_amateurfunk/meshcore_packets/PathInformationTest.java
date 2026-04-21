@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.HexFormat;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,10 +21,6 @@ public class PathInformationTest extends AbstractLoggingTest {
      * logger
      */
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(PathInformationTest.class);
-    /**
-     * class-wide instance of hex formatter
-     */
-    protected static HexFormat hexFormat = HexFormat.of();
 
     /**
      * Test rejection of completely empty packet
