@@ -29,10 +29,15 @@ public abstract class AbstractLoggingTest {
     static void setupLogging() {
         // This does not work, but is kept here as a reference for *why* it does not work
         //System.setProperty("java.util.logging.config.file", ClassLoader.getSystemResource("logging.properties").getPath());
+        // First, get the root logger, we need its handlers to grab the console logger
         Logger rootLogger = LogManager.getLogManager().getLogger("");
-        rootLogger.setLevel(Level.ALL);
+        // Normally, the ConsoleHandler is the only one active, but eh. No way to get it directly, so iterate
         for (Handler h : rootLogger.getHandlers()) {
+            // set the Handler itself to display everything it gets
             h.setLevel(Level.ALL);
         }
+        // Now, set the logger for our package to output everything
+        Logger testLogger = Logger.getLogger("de.afa_amateurfunk.meshcore_packets");
+        testLogger.setLevel(Level.ALL);
     }
 }
