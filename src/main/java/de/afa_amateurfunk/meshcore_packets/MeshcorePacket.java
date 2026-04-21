@@ -44,11 +44,6 @@ public abstract class MeshcorePacket {
      * representation of a packet's path information (hop size, hop count and hops)
      */
     protected PathInformation packetPathInformation;
-    /**
-     * the full packet in raw byte form
-     */
-    protected byte[] fullData;
-
 
     /**
      * empty constructor. Need it to silence Javadoc
@@ -143,7 +138,6 @@ public abstract class MeshcorePacket {
             ret.packetVersion = packetVersion;
             ret.packetPayloadType = packetPayloadType;
             ret.packetRouting = packetRouting;
-            ret.fullData = buffer;
 
             /*
             If we are using transport codes, there are four bytes (2x uint16) prepended before the path, which begins at index 5
@@ -293,27 +287,6 @@ public abstract class MeshcorePacket {
     }
 
     /**
-     * getter for fullData field
-     * TODO refactor this, should trigger a rebuild from all representation fields
-     *
-     * @return fullData field
-     */
-    public byte[] getFullData() {
-        return fullData;
-    }
-
-    /**
-     * setter for fullData field
-     * TODO refactor this, should trigger fromBytes logic? can we even do this?
-     *
-     * @param fullData new value
-     */
-    public void setFullData(byte[] fullData) {
-        this.fullData = fullData;
-    }
-
-
-    /**
      * for debug output
      *
      * @return string representation of packet's information
@@ -326,7 +299,6 @@ public abstract class MeshcorePacket {
                 ", packetRouting=" + packetRouting +
                 (this.packetRouting.isUsingTransport() ? ", transportCodes=" + hexFormat.formatHex(this.transportCodes[0]) + " / " + hexFormat.formatHex(this.transportCodes[1]) : "") +
                 ", packetPathInformation=" + packetPathInformation +
-                ", fullData=" + (fullData == null ? "null" : hexFormat.formatHex(fullData)) +
                 '}';
     }
 }
