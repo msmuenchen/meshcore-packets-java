@@ -259,15 +259,6 @@ public abstract class MeshcorePacket {
     }
 
     /**
-     * setter for packetPayloadType field
-     *
-     * @param packetPayloadType new value
-     */
-    public void setPacketPayloadType(PayloadType packetPayloadType) {
-        this.packetPayloadType = packetPayloadType;
-    }
-
-    /**
      * getter for transportCodes field
      *
      * @return transportCodes field
