@@ -155,14 +155,13 @@ public abstract class MeshcorePacket {
                 ret.transportCodes[1] = Arrays.copyOfRange(buffer, 3, 5);
                 LOG.trace("Packet is using transport codes {} / {}", hexFormat.formatHex(ret.transportCodes[0]), hexFormat.formatHex(ret.transportCodes[1]));
                 ret.packetPathInformation = new PathInformation(Arrays.copyOfRange(buffer, 5, buffer.length));
-                payloadStart = 5 + 1 + ret.packetPathInformation.getPathBuffer().length;
+                payloadStart = 1 + 4 + ret.packetPathInformation.toByteArray().length;
             } else { // VPR PL [H1..HN]
                 if (buffer.length < 2)
                     throw new ParseErrorException("Packet does not contain a path information");
                 LOG.trace("Packet is not using transport codes");
                 ret.packetPathInformation = new PathInformation(Arrays.copyOfRange(buffer, 1, buffer.length));
-                payloadStart = 1 + 1 + ret.packetPathInformation.getPathBuffer().length;
-
+                payloadStart = 1 + ret.packetPathInformation.toByteArray().length;
             }
             LOG.trace("Payload start at {} of {}, payload length expected {}", payloadStart, buffer.length, buffer.length - payloadStart);
             /**

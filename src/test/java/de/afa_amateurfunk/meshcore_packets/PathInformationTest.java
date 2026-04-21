@@ -37,9 +37,12 @@ public class PathInformationTest extends AbstractLoggingTest {
     void testDecodeZeroHop1Byte() {
         byte[] packetBuffer = hexFormat.parseHex("00");
         PathInformation pi = new PathInformation(packetBuffer);
-        assertArrayEquals(new byte[]{}, pi.getPathBuffer());
         assertEquals(0, pi.getHopCount());
         assertEquals(PathSizeType.SIZE_1, pi.getPacketPathSize());
+        assertArrayEquals(new byte[][]{}, pi.getHops());
+
+        //Verify reconstitution
+        assertArrayEquals(new byte[]{(byte) 0x00}, pi.toByteArray());
     }
 
     /**
@@ -49,9 +52,12 @@ public class PathInformationTest extends AbstractLoggingTest {
     void testDecodeZeroHop2Bytes() {
         byte[] packetBuffer = hexFormat.parseHex("40");
         PathInformation pi = new PathInformation(packetBuffer);
-        assertArrayEquals(new byte[]{}, pi.getPathBuffer());
         assertEquals(0, pi.getHopCount());
         assertEquals(PathSizeType.SIZE_2, pi.getPacketPathSize());
+        assertArrayEquals(new byte[][]{}, pi.getHops());
+
+        //Verify reconstitution
+        assertArrayEquals(new byte[]{(byte) 0x40}, pi.toByteArray());
     }
 
     /**
@@ -61,9 +67,12 @@ public class PathInformationTest extends AbstractLoggingTest {
     void testDecodeZeroHop3Bytes() {
         byte[] packetBuffer = hexFormat.parseHex("80");
         PathInformation pi = new PathInformation(packetBuffer);
-        assertArrayEquals(new byte[]{}, pi.getPathBuffer());
         assertEquals(0, pi.getHopCount());
         assertEquals(PathSizeType.SIZE_3, pi.getPacketPathSize());
+        assertArrayEquals(new byte[][]{}, pi.getHops());
+
+        //Verify reconstitution
+        assertArrayEquals(new byte[]{(byte) 0x80}, pi.toByteArray());
     }
 
     /**
@@ -87,17 +96,21 @@ public class PathInformationTest extends AbstractLoggingTest {
             byte basePacket = (byte) 0x00;
             byte finalPacket = (byte) (basePacket | (byte) i);
             byte[] buffer = new byte[i + 1];
-            byte[] expectedBuffer = new byte[i];
+            byte[][] expectedHops = new byte[i][];
             buffer[0] = finalPacket;
             for (int hop = 0; hop < i; hop++) {
                 buffer[hop + 1] = (byte) hop;
-                expectedBuffer[hop] = (byte) hop;
+                expectedHops[hop] = new byte[]{(byte) hop};
             }
             PathInformation pi = new PathInformation(buffer);
             assertEquals(i, pi.getHopCount());
             assertEquals(PathSizeType.SIZE_1, pi.getPacketPathSize());
-            assertEquals(i, pi.getPathBuffer().length);
-            assertArrayEquals(expectedBuffer, pi.getPathBuffer());
+            assertArrayEquals(expectedHops, pi.getHops());
+
+            //Verify reconstitution
+            assertArrayEquals(buffer, pi.toByteArray());
+
+            //Verify getHop
             for (int hop = 0; hop < i; hop++) {
                 LOG.trace(String.format("Verifying hop %d of %d", hop, i));
                 assertArrayEquals(new byte[]{(byte) hop}, pi.getHop(hop));
@@ -135,19 +148,22 @@ public class PathInformationTest extends AbstractLoggingTest {
             byte basePacket = (byte) 0x40;
             byte finalPacket = (byte) (basePacket | (byte) i);
             byte[] buffer = new byte[(i * 2) + 1];
-            byte[] expectedBuffer = new byte[i * 2];
+            byte[][] expectedHops = new byte[i][];
             buffer[0] = finalPacket;
             for (int hop = 0; hop < i; hop++) {
                 buffer[(hop * 2) + 1] = (byte) hop;
                 buffer[(hop * 2) + 2] = (byte) hop;
-                expectedBuffer[hop * 2] = (byte) hop;
-                expectedBuffer[(hop * 2) + 1] = (byte) hop;
+                expectedHops[hop] = new byte[]{(byte) hop, (byte) hop};
             }
             PathInformation pi = new PathInformation(buffer);
             assertEquals(i, pi.getHopCount());
             assertEquals(PathSizeType.SIZE_2, pi.getPacketPathSize());
-            assertEquals(i * 2, pi.getPathBuffer().length);
-            assertArrayEquals(expectedBuffer, pi.getPathBuffer());
+            assertArrayEquals(expectedHops, pi.getHops());
+
+            //Verify reconstitution
+            assertArrayEquals(buffer, pi.toByteArray());
+
+            //Verify getHop
             for (int hop = 0; hop < i; hop++) {
                 LOG.trace(String.format("Verifying hop %d of %d", hop, i));
                 assertArrayEquals(new byte[]{(byte) hop, (byte) hop}, pi.getHop(hop));
@@ -204,21 +220,23 @@ public class PathInformationTest extends AbstractLoggingTest {
             byte basePacket = (byte) 0x80;
             byte finalPacket = (byte) (basePacket | (byte) i);
             byte[] buffer = new byte[(i * 3) + 1];
-            byte[] expectedBuffer = new byte[i * 3];
+            byte[][] expectedHops = new byte[i][];
             buffer[0] = finalPacket;
             for (int hop = 0; hop < i; hop++) {
                 buffer[(hop * 3) + 1] = (byte) hop;
                 buffer[(hop * 3) + 2] = (byte) hop;
                 buffer[(hop * 3) + 3] = (byte) hop;
-                expectedBuffer[hop * 3] = (byte) hop;
-                expectedBuffer[(hop * 3) + 1] = (byte) hop;
-                expectedBuffer[(hop * 3) + 2] = (byte) hop;
+                expectedHops[hop] = new byte[]{(byte) hop, (byte) hop, (byte) hop};
             }
             PathInformation pi = new PathInformation(buffer);
             assertEquals(i, pi.getHopCount());
             assertEquals(PathSizeType.SIZE_3, pi.getPacketPathSize());
-            assertEquals(i * 3, pi.getPathBuffer().length);
-            assertArrayEquals(expectedBuffer, pi.getPathBuffer());
+            assertArrayEquals(expectedHops, pi.getHops());
+
+            //Verify reconstitution
+            assertArrayEquals(buffer, pi.toByteArray());
+
+            //Verify getHop
             for (int hop = 0; hop < i; hop++) {
                 LOG.trace(String.format("Verifying hop %d of %d", hop, i));
                 assertArrayEquals(new byte[]{(byte) hop, (byte) hop, (byte) hop}, pi.getHop(hop));

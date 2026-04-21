@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.HexFormat;
 
@@ -29,11 +31,7 @@ public class PathInformation {
      * Individual hops
      */
     protected byte[][] packetHops;
-    /**
-     * Buffer containing the packet hops.
-     * TODO refactor this to avoid having duplicate information. For now we need it for calculations in {@link MeshcorePacket#fromBytes(byte[])}
-     */
-    protected byte[] pathBuffer = new byte[0];
+
 
     /**
      * Empty/from-scratch constructor
@@ -42,7 +40,6 @@ public class PathInformation {
         LOG.trace("Creating new PathInformation");
         packetPathSize = PathSizeType.SIZE_1;
         packetHops = new byte[0][];
-        pathBuffer = new byte[0];
     }
 
     /**
@@ -71,21 +68,12 @@ public class PathInformation {
             return;
         if (buffer.length < 1 + (this.packetPathSize.getBytesPerHop() * hopCount))
             throw new ParseErrorException("Packet does not contain enough bytes to store all hops, appears to be cut off");
-        pathBuffer = Arrays.copyOfRange(buffer, 1, 1 + (this.packetPathSize.getBytesPerHop() * hopCount));
+        byte[] pathBuffer = Arrays.copyOfRange(buffer, 1, 1 + (this.packetPathSize.getBytesPerHop() * hopCount));
         LOG.trace(String.format("Determining hops from %s with %d bytes per hop", hexFormat.formatHex(pathBuffer), this.packetPathSize.getBytesPerHop()));
         for (int i = 0; i < hopCount; i++) {
             this.packetHops[i] = Arrays.copyOfRange(buffer, 1 + (i * this.packetPathSize.getBytesPerHop()), 1 + (i * this.packetPathSize.getBytesPerHop()) + this.packetPathSize.getBytesPerHop());
             LOG.trace(String.format("Recorded hop %s", StringUtils.leftPad(hexFormat.formatHex(this.packetHops[i]), this.packetPathSize.getBytesPerHop() * 2, '0')));
         }
-    }
-
-    /**
-     * get the buffer for the path bytes (without header byte)
-     *
-     * @return buffer for the path bytes (without header byte)
-     */
-    public byte[] getPathBuffer() {
-        return pathBuffer;
     }
 
     /**
@@ -118,6 +106,15 @@ public class PathInformation {
     }
 
     /**
+     * get all hops
+     *
+     * @return all hops
+     */
+    public byte[][] getHops() {
+        return packetHops;
+    }
+
+    /**
      * internal helper to serialize the packet hops array to something readable by humans
      *
      * @return string representation of hops
@@ -145,5 +142,20 @@ public class PathInformation {
                 "packetPathSize=" + packetPathSize +
                 ", packetHops=" + serializePacketHops() +
                 '}';
+    }
+
+    /**
+     * reconstitute the path information byte array
+     */
+    public byte[] toByteArray() {
+        ByteBuffer ret = ByteBuffer.allocate(1 + (packetPathSize.getBytesPerHop() * packetHops.length)).order(ByteOrder.LITTLE_ENDIAN);
+        byte headerByte = 0x00;
+        headerByte = (byte) (headerByte | (packetPathSize.getBitmask() << 6));
+        headerByte = (byte) (headerByte | packetHops.length);
+        ret.put(headerByte);
+        for (byte[] packetHop : this.packetHops) {
+            ret.put(packetHop);
+        }
+        return ret.array();
     }
 }
