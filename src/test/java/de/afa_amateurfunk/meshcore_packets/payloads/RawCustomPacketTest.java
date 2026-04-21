@@ -25,9 +25,10 @@ public class RawCustomPacketTest extends AbstractLoggingTest {
 
     /**
      * Test decoding of a completely empty packet. Pointless but legal
+     * Indirectly, also branch-test MeshcorePacket#fromBytes
      */
     @Test
-    public void testParseEmptyPacket() {
+    public void testParseFullEmptyPacket() {
         String packetBuffer = "3E00";
         MeshcorePacket packet = MeshcorePacket.fromString(packetBuffer);
         assertEquals(RawCustomPacket.class, packet.getClass());
@@ -35,13 +36,32 @@ public class RawCustomPacketTest extends AbstractLoggingTest {
 
     /**
      * Test decoding of a full-featured packet
+     * Indirectly, also branch-test MeshcorePacket#fromBytes
      */
     @Test
-    public void testParsePacketWithPayload() {
+    public void testParseFullPacketWithPayload() {
         String packetBuffer = "3E00AABBCCDDEEFF";
         MeshcorePacket packet = MeshcorePacket.fromString(packetBuffer);
         assertEquals(RawCustomPacket.class, packet.getClass());
         assertArrayEquals(new byte[]{(byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD, (byte) 0xEE, (byte) 0xFF}, ((RawCustomPacket) packet).getPayloadBuffer());
+    }
+
+    /**
+     * Test constructing a completely empty packet (pointless but legal)
+     */
+    @Test
+    public void testParseEmptyPacket() {
+        RawCustomPacket packet = new RawCustomPacket("");
+        assertArrayEquals(new byte[]{}, packet.getPayloadBuffer());
+    }
+
+    /**
+     * Test constructing a packet with payload
+     */
+    @Test
+    public void testParsePacketWithPayload() {
+        RawCustomPacket packet = new RawCustomPacket("AABBCCDDEEFF");
+        assertArrayEquals(new byte[]{(byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD, (byte) 0xEE, (byte) 0xFF}, packet.getPayloadBuffer());
     }
 
     /*
