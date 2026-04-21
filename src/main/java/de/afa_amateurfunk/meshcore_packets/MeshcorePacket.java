@@ -48,10 +48,7 @@ public abstract class MeshcorePacket {
      * the full packet in raw byte form
      */
     protected byte[] fullData;
-    /**
-     * the packet's payload part in raw byte form, to be used by implementing classes
-     */
-    protected byte[] payloadBuffer;
+
 
     /**
      * empty constructor. Need it to silence Javadoc
@@ -308,24 +305,6 @@ public abstract class MeshcorePacket {
         this.fullData = fullData;
     }
 
-    /**
-     * getter for payloadBuffer field
-     *
-     * @return payloadBuffer field
-     */
-    public byte[] getPayloadBuffer() {
-        return payloadBuffer;
-    }
-
-    /**
-     * setter for payloadBuffer field
-     * TODO check if we can actually do this or if we rather have to go for the subclasses?
-     *
-     * @param payloadBuffer raw buffer
-     */
-    protected void setPayloadBuffer(byte[] payloadBuffer) {
-        this.payloadBuffer = payloadBuffer;
-    }
 
     /**
      * for debug output
@@ -341,7 +320,6 @@ public abstract class MeshcorePacket {
                 (this.packetRouting.isUsingTransport() ? ", transportCodes=" + hexFormat.formatHex(this.transportCodes[0]) + " / " + hexFormat.formatHex(this.transportCodes[1]) : "") +
                 ", packetPathInformation=" + packetPathInformation +
                 ", fullData=" + (fullData == null ? "null" : hexFormat.formatHex(fullData)) +
-                ", payloadBuffer=" + (payloadBuffer == null ? "null" : hexFormat.formatHex(payloadBuffer)) +
                 '}';
     }
 }

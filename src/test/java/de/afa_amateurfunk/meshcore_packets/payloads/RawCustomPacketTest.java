@@ -41,7 +41,7 @@ public class RawCustomPacketTest extends AbstractLoggingTest {
         String packetBuffer = "3E00AABBCCDDEEFF";
         MeshcorePacket packet = MeshcorePacket.fromString(packetBuffer);
         assertEquals(RawCustomPacket.class, packet.getClass());
-        assertArrayEquals(new byte[]{(byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD, (byte) 0xEE, (byte) 0xFF}, packet.getPayloadBuffer());
+        assertArrayEquals(new byte[]{(byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD, (byte) 0xEE, (byte) 0xFF}, ((RawCustomPacket) packet).getPayloadBuffer());
     }
 
     /*
@@ -110,7 +110,7 @@ public class RawCustomPacketTest extends AbstractLoggingTest {
         String packetBuffer = "3E00FFEEDDCCBBAA";
         MeshcorePacket packet = MeshcorePacket.fromString(packetBuffer);
         packet.parsePayload(hexFormat.parseHex("AABBCCDDEEFF"));
-        assertArrayEquals(new byte[]{(byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD, (byte) 0xEE, (byte) 0xFF}, packet.getPayloadBuffer());
+        assertArrayEquals(new byte[]{(byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD, (byte) 0xEE, (byte) 0xFF}, ((RawCustomPacket) packet).getPayloadBuffer());
         String expectedPacketBuffer = "3E00AABBCCDDEEFF";
         //TODO implement full byte comparison once we have toByteArray() on MeshcorePacket
     }

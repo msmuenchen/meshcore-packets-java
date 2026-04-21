@@ -1,6 +1,7 @@
 package de.afa_amateurfunk.meshcore_packets.payloads;
 
 import de.afa_amateurfunk.meshcore_packets.MeshcorePacket;
+import org.apache.commons.lang3.NotImplementedException;
 
 /**
  * Trace packet
@@ -30,6 +31,6 @@ public class TracePacket extends MeshcorePacket {
      */
     @Override
     public void parsePayload(byte[] payloadBuffer) {
-        this.payloadBuffer = payloadBuffer;
+        throw new NotImplementedException();
     }
 }

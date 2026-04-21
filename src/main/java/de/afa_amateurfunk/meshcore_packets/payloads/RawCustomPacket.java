@@ -1,12 +1,17 @@
 package de.afa_amateurfunk.meshcore_packets.payloads;
 
 import de.afa_amateurfunk.meshcore_packets.MeshcorePacket;
+import de.afa_amateurfunk.meshcore_packets.exceptions.ParseErrorException;
 import de.afa_amateurfunk.meshcore_packets.types.PayloadType;
 
 /**
  * Raw Custom packet
  */
 public class RawCustomPacket extends MeshcorePacket {
+    /**
+     * the packet's payload part in raw byte form
+     */
+    protected byte[] payloadBuffer;
 
     /**
      * Construct an instance with a pre-supplied payload buffer
@@ -47,5 +52,27 @@ public class RawCustomPacket extends MeshcorePacket {
     @Override
     public void parsePayload(byte[] payloadBuffer) {
         setPayloadBuffer(payloadBuffer);
+    }
+
+
+    /**
+     * getter for payloadBuffer field
+     *
+     * @return payloadBuffer field
+     */
+    public byte[] getPayloadBuffer() {
+        return payloadBuffer;
+    }
+
+    /**
+     * setter for payloadBuffer field
+     * TODO check if we can actually do this or if we rather have to go for the subclasses?
+     *
+     * @param payloadBuffer raw buffer
+     */
+    protected void setPayloadBuffer(byte[] payloadBuffer) {
+        if (payloadBuffer.length > 184)
+            throw new ParseErrorException("Payload buffer too long");
+        this.payloadBuffer = payloadBuffer;
     }
 }
