@@ -300,6 +300,7 @@ public abstract class MeshcorePacket {
      * @return byte array ready to transmit on the air
      */
     public byte[] toByteArray() {
+        // Allocate 255 bytes aka LoRa MTU to have a safe gate against emitting too large packets
         ByteBuffer ret = ByteBuffer.allocate(255).order(ByteOrder.LITTLE_ENDIAN);
         // First, the version/payload/route byte
         byte vprByte = 0x00;
@@ -307,15 +308,26 @@ public abstract class MeshcorePacket {
         vprByte = (byte) (vprByte | (packetPayloadType.getBitmask() << 2));
         vprByte = (byte) (vprByte | packetRouting.getBitmask());
         ret.put(vprByte);
+        LOG.trace(String.format("Reconstituted header byte %02x", vprByte));
         // If transport codes are used, these follow next
         if (packetRouting.isUsingTransport()) {
             ret.put(transportCodes[0]);
             ret.put(transportCodes[1]);
+            LOG.trace(String.format("Reconstituted transport codes %s / %s", hexFormat.formatHex(transportCodes[0]), hexFormat.formatHex(transportCodes[1])));
         }
         // Path information
-        ret.put(packetPathInformation.toByteArray());
+        byte[] pathBuffer = packetPathInformation.toByteArray();
+        ret.put(pathBuffer);
+        LOG.trace(String.format("Reconstituted path buffer %s", hexFormat.formatHex(pathBuffer)));
         // Payload
-        ret.put(getPayloadBuffer());
-        return ret.array();
+        byte[] payloadBuffer = getPayloadBuffer();
+        ret.put(payloadBuffer);
+        LOG.trace(String.format("Reconstituted payload buffer %s", hexFormat.formatHex(payloadBuffer)));
+
+        // Before returning, slim down the buffer to what we actually need, aka cut trailing zero-bytes
+        byte[] finalPacket = new byte[ret.position()];
+        ret.position(0).get(finalPacket);
+        LOG.trace(String.format("Reconstituted final packet %s", hexFormat.formatHex(finalPacket)));
+        return finalPacket;
     }
 }
