@@ -8,6 +8,8 @@ import de.afa_amateurfunk.meshcore_packets.types.VersionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.HexFormat;
 
@@ -290,5 +292,30 @@ public abstract class MeshcorePacket {
                 (this.packetRouting.isUsingTransport() ? ", transportCodes=" + hexFormat.formatHex(this.transportCodes[0]) + " / " + hexFormat.formatHex(this.transportCodes[1]) : "") +
                 ", packetPathInformation=" + packetPathInformation +
                 '}';
+    }
+
+    /**
+     * turn the packet into a byte array representation
+     *
+     * @return byte array ready to transmit on the air
+     */
+    public byte[] toByteArray() {
+        ByteBuffer ret = ByteBuffer.allocate(255).order(ByteOrder.LITTLE_ENDIAN);
+        // First, the version/payload/route byte
+        byte vprByte = 0x00;
+        vprByte = (byte) (vprByte | (packetVersion.getBitmask() << 6));
+        vprByte = (byte) (vprByte | (packetPayloadType.getBitmask() << 2));
+        vprByte = (byte) (vprByte | packetRouting.getBitmask());
+        ret.put(vprByte);
+        // If transport codes are used, these follow next
+        if (packetRouting.isUsingTransport()) {
+            ret.put(transportCodes[0]);
+            ret.put(transportCodes[1]);
+        }
+        // Path information
+        ret.put(packetPathInformation.toByteArray());
+        // Payload
+        ret.put(getPayloadBuffer());
+        return ret.array();
     }
 }
