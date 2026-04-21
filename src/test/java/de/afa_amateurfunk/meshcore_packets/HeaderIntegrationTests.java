@@ -154,7 +154,7 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
      */
     @Test
     void testAcceptMaxLongTransportFloodPacket() {
-        String packetBufferBuilder = "3C" + //raw_custom with TRANSPORT_FLOOD routing
+        String packetBuffer = "3C" + //raw_custom with TRANSPORT_FLOOD routing
                 "AABBCCDD" + //TC1 AABB, TC2 CCDD
                 "3F" + //1 bph, 63 hops
                 "00112233445566778899" + // hops 0-9
@@ -184,7 +184,9 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
                 "00112233445566778899" + // payload 170-179
                 "00112233"; // payload 180-183
 
-        assertDoesNotThrow(() -> MeshcorePacket.fromString(packetBufferBuilder));
+        MeshcorePacket packet = assertDoesNotThrow(() -> MeshcorePacket.fromString(packetBuffer));
+        //Verify reconstitution
+        assertArrayEquals(hexFormat.parseHex(packetBuffer), packet.toByteArray());
     }
 
     /**
@@ -192,7 +194,7 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
      */
     @Test
     void testAcceptMaxLongFloodPacket() {
-        String packetBufferBuilder = "3D" + //raw_custom with FLOOD routing
+        String packetBuffer = "3D" + //raw_custom with FLOOD routing
                 "3F" + //1 bph, 63 hops
                 "00112233445566778899" + // hops 0-9
                 "00112233445566778899" + // hops 10-19
@@ -221,7 +223,9 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
                 "00112233445566778899" + // payload 170-179
                 "00112233"; // payload 180-183
 
-        assertDoesNotThrow(() -> MeshcorePacket.fromString(packetBufferBuilder));
+        MeshcorePacket packet = assertDoesNotThrow(() -> MeshcorePacket.fromString(packetBuffer));
+        //Verify reconstitution
+        assertArrayEquals(hexFormat.parseHex(packetBuffer), packet.toByteArray());
     }
 
     /**
@@ -230,7 +234,9 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
     @Test
     void testRouteTransportFlood() {
         String packetBuffer = "3CAABBCCDD00"; // 00 1111 00
-        MeshcorePacket packet = MeshcorePacket.fromString(packetBuffer);
+        MeshcorePacket packet = assertDoesNotThrow(() -> MeshcorePacket.fromString(packetBuffer));
+        //Verify reconstitution
+        assertArrayEquals(hexFormat.parseHex(packetBuffer), packet.toByteArray());
         assertEquals(RawCustomPacket.class, packet.getClass());
         assertEquals(VersionType.VER_1, packet.getPacketVersion());
         assertEquals(RouteType.TRANSPORT_FLOOD, packet.getPacketRouting());
@@ -244,7 +250,9 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
     @Test
     void testRouteFlood() {
         String packetBuffer = "3D00"; // 00 1111 01
-        MeshcorePacket packet = MeshcorePacket.fromString(packetBuffer);
+        MeshcorePacket packet = assertDoesNotThrow(() -> MeshcorePacket.fromString(packetBuffer));
+        //Verify reconstitution
+        assertArrayEquals(hexFormat.parseHex(packetBuffer), packet.toByteArray());
         assertEquals(RawCustomPacket.class, packet.getClass());
         assertEquals(VersionType.VER_1, packet.getPacketVersion());
         assertEquals(RouteType.FLOOD, packet.getPacketRouting());
@@ -256,7 +264,9 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
     @Test
     void testRouteTransportDirect() {
         String packetBuffer = "3FAABBCCDD00"; // 00 1111 11
-        MeshcorePacket packet = MeshcorePacket.fromString(packetBuffer);
+        MeshcorePacket packet = assertDoesNotThrow(() -> MeshcorePacket.fromString(packetBuffer));
+        //Verify reconstitution
+        assertArrayEquals(hexFormat.parseHex(packetBuffer), packet.toByteArray());
         assertEquals(RawCustomPacket.class, packet.getClass());
         assertEquals(VersionType.VER_1, packet.getPacketVersion());
         assertEquals(RouteType.TRANSPORT_DIRECT, packet.getPacketRouting());
@@ -270,7 +280,9 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
     @Test
     void testRouteDirect() {
         String packetBuffer = "3E00"; // 00 1111 10
-        MeshcorePacket packet = MeshcorePacket.fromString(packetBuffer);
+        MeshcorePacket packet = assertDoesNotThrow(() -> MeshcorePacket.fromString(packetBuffer));
+        //Verify reconstitution
+        assertArrayEquals(hexFormat.parseHex(packetBuffer), packet.toByteArray());
         assertEquals(RawCustomPacket.class, packet.getClass());
         assertEquals(VersionType.VER_1, packet.getPacketVersion());
         assertEquals(RouteType.DIRECT, packet.getPacketRouting());
