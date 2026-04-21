@@ -146,6 +146,8 @@ public class PathInformation {
 
     /**
      * reconstitute the path information byte array
+     *
+     * @return byte array corresponding to internal state
      */
     public byte[] toByteArray() {
         ByteBuffer ret = ByteBuffer.allocate(1 + (packetPathSize.getBytesPerHop() * packetHops.length)).order(ByteOrder.LITTLE_ENDIAN);
