@@ -187,6 +187,24 @@ public abstract class MeshcorePacket {
     }
 
     /**
+     * Copy the MeshcorePacket core fields from the pseudo-abstract class to the subclass
+     * <p>This is half of a clone() operation, but does not copy anything related to payload type</p>
+     *
+     * @param sourcePacket the MeshcorePacket source packet
+     */
+    protected void copySuperstructure(MeshcorePacket sourcePacket) {
+        this.packetVersion = sourcePacket.packetVersion;
+        this.packetRouting = sourcePacket.packetRouting;
+        if (this.packetRouting.isUsingTransport()) {
+            this.transportCodes = new byte[2][];
+            this.transportCodes[0] = Arrays.copyOf(sourcePacket.transportCodes[0], sourcePacket.transportCodes[0].length);
+            this.transportCodes[1] = Arrays.copyOf(sourcePacket.transportCodes[1], sourcePacket.transportCodes[1].length);
+        }
+        this.packetPayloadType = sourcePacket.packetPayloadType;
+        this.packetPathInformation = new PathInformation(sourcePacket.packetPathInformation.toByteArray());
+    }
+
+    /**
      * parse a payload buffer and set all applicable internal fields, to be implemented by subclasses
      *
      * @param payloadBuffer byte buffer (payload only, no header!)
