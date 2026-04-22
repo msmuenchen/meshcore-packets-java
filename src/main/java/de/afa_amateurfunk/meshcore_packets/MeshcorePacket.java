@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HexFormat;
 
@@ -331,4 +333,22 @@ public abstract class MeshcorePacket {
         LOG.trace(String.format("Reconstituted final packet %s", hexFormat.formatHex(finalPacket)));
         return finalPacket;
     }
+
+    /**
+     * Calculate the packet hash
+     * <p>Hash payload type, path (if trace packet) and payload, but not route/version/transport codes/existing path</p>
+     *
+     * @return
+     * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Packet.cpp#L41">upstream code</a>
+     */
+    public byte[] getPacketHash() throws NoSuchAlgorithmException {
+        MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+        sha256.update((byte) this.packetPayloadType.getBitmask());
+        if (this instanceof TracePacket) {
+            sha256.update(packetPathInformation.toByteArray());
+        }
+        sha256.update(getPayloadBuffer());
+        return Arrays.copyOfRange(sha256.digest(), 0, 8);
+    }
+
 }
