@@ -75,4 +75,16 @@ public class RawCustomPacket extends MeshcorePacket {
             throw new ParseErrorException("Payload buffer too long");
         this.payloadBuffer = payloadBuffer;
     }
+
+    @Override
+    public String toString() {
+        return "RawCustomPacket{" +
+                "payloadBuffer=" + (
+                this.payloadBuffer != null ?
+                        "'" + hexFormat.formatHex(this.payloadBuffer) + "'#" + this.payloadBuffer.length
+                        :
+                        "null"
+        )
+                + "}/" + super.toString();
+    }
 }

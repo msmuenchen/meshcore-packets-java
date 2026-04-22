@@ -319,7 +319,9 @@ public abstract class MeshcorePacket {
                 "packetVersion=" + packetVersion +
                 ", packetPayloadType=" + packetPayloadType +
                 ", packetRouting=" + packetRouting +
-                (this.packetRouting.isUsingTransport() ? ", transportCodes=" + hexFormat.formatHex(this.transportCodes[0]) + " / " + hexFormat.formatHex(this.transportCodes[1]) : "") +
+                ", transportCodes=" + (this.packetRouting.isUsingTransport() ?
+                hexFormat.formatHex(this.transportCodes[0]) + " / " + hexFormat.formatHex(this.transportCodes[1])
+                : "null") +
                 ", packetPathInformation=" + packetPathInformation +
                 '}';
     }
