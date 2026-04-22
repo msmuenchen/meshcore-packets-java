@@ -176,7 +176,16 @@ public abstract class MeshcorePacket {
             if (buffer.length - payloadStart > 184) {
                 throw new ParseErrorException("Packet has too long payload");
             } else if (buffer.length - payloadStart > 0) {
-                ret.parsePayload(Arrays.copyOfRange(buffer, payloadStart, buffer.length));
+                /*
+                Some particular nastyness: ControlPacket has subtypes.
+                At the time we create the instance above, we need a ControlPacket so that we can store the routing and other information
+                But only now after decoding everything else do we have enough information we can actually use to determine which of the subtypes we need
+                 */
+                if (ret instanceof ControlPacket) {
+                    ret = ((ControlPacket) ret).subclassFromBytes(Arrays.copyOfRange(buffer, payloadStart, buffer.length));
+                } else {
+                    ret.parsePayload(Arrays.copyOfRange(buffer, payloadStart, buffer.length));
+                }
             }
             LOG.trace("Finished parsing packet: {}", ret);
             return ret;

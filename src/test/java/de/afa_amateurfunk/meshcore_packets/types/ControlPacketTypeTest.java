@@ -62,7 +62,7 @@ public class ControlPacketTypeTest extends AbstractLoggingTest {
      * </p>
      */
     @Test
-    void testRejectInvalidCases() {
+    public void testRejectInvalidCases() {
         byte[] invalidBitmasks = new byte[]{(byte) 0x00, (byte) 0x10, (byte) 0x20, (byte) 0x30, (byte) 0x40, (byte) 0x50, (byte) 0x60, (byte) 0x70, (byte) 0xA0, (byte) 0xB0, (byte) 0xC0, (byte) 0xD0, (byte) 0xE0, (byte) 0xF0};
         for (byte bitmask : invalidBitmasks) {
             for (int flags = 0; flags < 16; flags++) {
