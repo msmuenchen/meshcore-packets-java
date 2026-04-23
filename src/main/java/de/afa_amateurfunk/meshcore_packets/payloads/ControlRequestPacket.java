@@ -1,6 +1,7 @@
 package de.afa_amateurfunk.meshcore_packets.payloads;
 
 import de.afa_amateurfunk.meshcore_packets.exceptions.ParseErrorException;
+import de.afa_amateurfunk.meshcore_packets.types.AdvertNodeType;
 import de.afa_amateurfunk.meshcore_packets.types.ControlPacketType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ControlRequestPacket extends ControlPacket {
     /**
@@ -21,7 +24,7 @@ public class ControlRequestPacket extends ControlPacket {
     /**
      * type filter
      */
-    protected Byte typeFilter;
+    protected LinkedList<AdvertNodeType> typeFilter;
     /**
      * request tag to be reflected in responses
      */
@@ -42,12 +45,21 @@ public class ControlRequestPacket extends ControlPacket {
     }
 
     /**
+     * Construct an instance with a pre-supplied payload buffer
+     *
+     * @param buffer byte buffer (payload only, no header!)
+     */
+    public ControlRequestPacket(String buffer) {
+        this(hexFormat.parseHex(buffer));
+    }
+
+    /**
      * Construct a packet from scratch
      */
     public ControlRequestPacket() {
         super();
         prefix_only = null;
-        typeFilter = null;
+        typeFilter = new LinkedList<>();
         tag = null;
         since = null;
         subtype = ControlPacketType.DISCOVER_REQUEST;
@@ -78,10 +90,45 @@ public class ControlRequestPacket extends ControlPacket {
         subtype = ControlPacketType.fromHeader(flagsByte);
         if (!subtype.equals(ControlPacketType.DISCOVER_REQUEST))
             throw new ParseErrorException("Tried to construct a ControlDiscoverRequest packet on a different type payload");
+
         // prefix_only flag
         prefix_only = ((((flagsByte & 0xFF) & 0x0F) & 0x01) == 0x01);
+        // assert that we do not have any other flags
+        if ((flagsByte & 0x0E) != 0) {
+            throw new ParseErrorException("Unknown flags in decoding");
+        }
+
         //type filter byte
-        typeFilter = payloadView.get();
+        /*
+        this is an actual bitmask with each bit standing for a node type which is asked to reply
+        0x01 / 0b00000001 => ADV_TYPE_NONE
+        0x02 / 0b00000010 => ADV_TYPE_CHAT
+        0x04 / 0b00000100 => ADV_TYPE_REPEATER
+        0x08 / 0b00001000 => ADV_TYPE_ROOM
+        0x10 / 0b00010000 => ADV_TYPE_SENSOR
+        confirmed by Liam Cottle, see https://discord.com/channels/1495203904898728149/1495410606985969765/1496813341224472576
+        Node types with a numeric index > 7 cannot be identified by this packet as a result
+         */
+        byte typeFilterByte = payloadView.get();
+        // Use a linked list for idempotency in comparisons
+        typeFilter = new LinkedList<>();
+        for (AdvertNodeType candidate : AdvertNodeType.values()) {
+            byte bitmask = (byte) (0x1 << candidate.getIndex());
+            LOG.trace(String.format("Checking bitmask %02x of %s", bitmask, candidate));
+            if ((typeFilterByte & bitmask) == bitmask) {
+                LOG.trace(String.format("Found bitmask of %s", candidate));
+                typeFilter.add(candidate);
+            }
+        }
+        // Fail on not-yet-assigned filters
+        for (byte bitmask : new byte[]{(byte) 0x20, (byte) 0x40, (byte) 0x80}) {
+            LOG.trace(String.format("Checking bitmask %02x", bitmask));
+            if ((typeFilterByte & bitmask) == bitmask) {
+                LOG.trace(String.format("Found bitmask of %s", bitmask));
+                throw new ParseErrorException("Encountered unknown filter flag");
+            }
+        }
+
         // tag bytes
         tag = new byte[4];
         payloadView.get(tag);
@@ -110,7 +157,13 @@ public class ControlRequestPacket extends ControlPacket {
         ret.put(flagsByte);
         LOG.trace(String.format("Reconstituted flag byte %s", flagsByte));
         // type filter
-        ret.put(typeFilter);
+        byte typeFilterByte = 0x00;
+        for (AdvertNodeType filterEntry : typeFilter) {
+            byte bitmask = (byte) (0x1 << filterEntry.getIndex());
+            LOG.trace(String.format("Adding bitmask %02x of %s", bitmask, filterEntry));
+            typeFilterByte = (byte) (typeFilterByte | bitmask);
+        }
+        ret.put(typeFilterByte);
         LOG.trace(String.format("Reconstituted type filter byte %s", typeFilter));
         //tag
         ret.put(tag);
@@ -136,12 +189,8 @@ public class ControlRequestPacket extends ControlPacket {
         this.prefix_only = prefixOnly;
     }
 
-    public Byte getTypeFilter() {
+    public List<AdvertNodeType> getTypeFilter() {
         return typeFilter;
-    }
-
-    public void setTypeFilter(Byte typeFilter) {
-        this.typeFilter = typeFilter;
     }
 
     public byte[] getTag() {

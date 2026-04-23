@@ -9,6 +9,8 @@ import de.afa_amateurfunk.meshcore_packets.types.PayloadType;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,7 +53,7 @@ public class ControlPacketTest extends AbstractLoggingTest {
         assertEquals(ControlRequestPacket.class, actualPacket.getClass());
         assertEquals(ControlPacketType.DISCOVER_REQUEST, actualPacket.getSubtype());
         assertFalse(((ControlRequestPacket) actualPacket).getPrefixOnly());
-        assertEquals((byte) 0x04, ((ControlRequestPacket) actualPacket).getTypeFilter());
+        assertEquals(new LinkedList<AdvertNodeType>(List.of(AdvertNodeType.REPEATER)), ((ControlRequestPacket) actualPacket).getTypeFilter());
         assertArrayEquals(new byte[]{(byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD}, ((ControlRequestPacket) actualPacket).getTag());
         assertNull(((ControlRequestPacket) actualPacket).getSince());
         //Verify reconstitution
