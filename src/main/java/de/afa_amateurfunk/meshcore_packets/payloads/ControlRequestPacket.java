@@ -12,6 +12,10 @@ import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Control packet of subtype DISCOVER_REQUEST
+ * <p>This packet asks all nodes in zero-hop range to reply with a DISCOVER_RESPONSE and their public key, with an optional filter.</p>
+ */
 public class ControlRequestPacket extends ControlPacket {
     /**
      * logger

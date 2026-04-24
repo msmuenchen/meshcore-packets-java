@@ -10,6 +10,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.InvalidParameterException;
 
+/**
+ * Control packet of subtype DISCOVER_RESPONSE
+ * <p>This packet contains the repeater's public key and the SNR with which the DISCOVER_REQUEST was received.</p>
+ */
 public class ControlResponsePacket extends ControlPacket {
     /**
      * logger

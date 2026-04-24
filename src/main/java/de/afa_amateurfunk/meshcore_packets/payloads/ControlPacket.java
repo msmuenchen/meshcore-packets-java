@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
  * <p>Implementation notice: this is a pseudo-abstract class, see {@link MeshcorePacket#fromBytes(byte[])} for the reasoning</p>
  *
  * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/examples/simple_repeater/MyMesh.cpp#L772">upstream code</a>
+ * @see ControlRequestPacket
+ * @see ControlResponsePacket
  */
 public class ControlPacket extends MeshcorePacket {
     /**
