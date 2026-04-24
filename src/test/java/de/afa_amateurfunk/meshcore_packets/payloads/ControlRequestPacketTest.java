@@ -50,7 +50,7 @@ public class ControlRequestPacketTest extends AbstractLoggingTest {
      * @see ControlRequestPacket#parsePayload(byte[]) for the gate under test
      */
     @Test
-    public void testRejectTooShortPacketInnerGate() {
+    public void testRejectInvalidLengthPacketInnerGate() {
         String[] invalidBuffers = new String[]{
                 "80", // flag
                 "8000", // flag + filter
