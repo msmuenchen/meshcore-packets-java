@@ -167,7 +167,7 @@ public class ControlResponsePacket extends ControlPacket {
     }
 
     public void setPublicKey(byte[] publicKey) {
-        if (publicKey.length != 32)
+        if (publicKey.length != 32 && publicKey.length != 8)
             throw new InvalidParameterException(String.format("input length mismatch: is %d, should be %d", publicKey.length, 32));
         this.publicKey = publicKey;
     }
