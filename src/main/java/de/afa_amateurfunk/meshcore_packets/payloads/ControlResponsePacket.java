@@ -48,6 +48,15 @@ public class ControlResponsePacket extends ControlPacket {
     }
 
     /**
+     * Construct an instance with a pre-supplied payload buffer
+     *
+     * @param buffer byte buffer (payload only, no header!)
+     */
+    public ControlResponsePacket(String buffer) {
+        this(hexFormat.parseHex(buffer));
+    }
+
+    /**
      * Construct a packet from scratch
      */
     public ControlResponsePacket() {
