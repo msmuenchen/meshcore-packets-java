@@ -71,7 +71,7 @@ public class PublicKey {
             asn1Buffer[11] = 0x00; // 0 bits of padding (apparently there's a possibility of differentiating between "constructed" and "primitive" encoding?) https://datatracker.ietf.org/doc/html/draft-kaliski-asn1-layman-guide-00#name-bit-string
             // Now that we got the header constructed... copy in our public key byte by byte
             System.arraycopy(this.publicKey, 0, asn1Buffer, 12, 32);
-
+            LOG.trace(String.format("Passing %s to X509EncodedKeySpec", hexFormat.formatHex(this.publicKey)));
             final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(asn1Buffer);
             publicKeyObj = kf.generatePublic(keySpec);
 
@@ -125,5 +125,12 @@ public class PublicKey {
             LOG.error("Failed to verify signature thanks to exception thrown", e);
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "PublicKey{" +
+                "publicKey=" + hexFormat.formatHex(publicKey) +
+                '}';
     }
 }
