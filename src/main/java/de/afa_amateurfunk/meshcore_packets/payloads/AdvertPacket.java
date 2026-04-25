@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
 import java.time.Instant;
 
@@ -404,5 +405,27 @@ public class AdvertPacket extends MeshcorePacket {
         ret.position(0).get(finalPayload);
         LOG.trace(String.format("Reconstituted final payload %s", hexFormat.formatHex(finalPayload)));
         return finalPayload;
+    }
+
+    @Override
+    public String toString() {
+        return "AdvertPacket{" +
+                "packetPathInformation=" + packetPathInformation +
+                ", transportCodes=" + (this.packetRouting.isUsingTransport() ?
+                hexFormat.formatHex(this.transportCodes[0]) + " / " + hexFormat.formatHex(this.transportCodes[1])
+                : "null") +
+                ", packetRouting=" + packetRouting +
+                ", packetPayloadType=" + packetPayloadType +
+                ", packetVersion=" + packetVersion +
+                ", nodeName=" + new String(nodeName, StandardCharsets.UTF_8) +
+                ", feat2=" + feat2 +
+                ", feat1=" + feat1 +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                ", nodeType=" + nodeType +
+                ", signature=" + hexFormat.formatHex(signature) +
+                ", timestamp=" + timestamp +
+                ", publicKey=" + hexFormat.formatHex(publicKey) +
+                '}';
     }
 }
