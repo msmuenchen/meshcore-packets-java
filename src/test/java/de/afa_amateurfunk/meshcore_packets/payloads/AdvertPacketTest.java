@@ -858,10 +858,10 @@ public class AdvertPacketTest extends AbstractLoggingTest {
     }
 
     /**
-     * Test packet hash against real-world example
+     * Test packet cryptography against real-world example
      */
     @Test
-    public void testPacketHash() {
+    public void testPacketCryptography() {
         LinkedHashMap<String, String> packets = new LinkedHashMap<>();
         //Advert for DE-BY-LA Nordfriedhof, direct
         packets.put("8E83AE7F02A711C9", "120039FF455499896B69AC13A788C09FB2403E8D366942F13552B93EFBE98C0C31962005E8698631F4BE67E5F7DE951C9C562DBF65BFF151DB340D8960F4F729B10B807B1D3C92ABC3497B41EE0A7432BD908D7BCFA89A7F8FD9F95B43FFEC5817A8F510CD08920C07E502E817B90044452D42592D4C41204E6F72646672696564686F66");
@@ -873,10 +873,12 @@ public class AdvertPacketTest extends AbstractLoggingTest {
             String packetBuffer = packets.get(expectedHash);
             LOG.trace(String.format("Expecting hash %s for packet %s", expectedHash, packetBuffer));
             MeshcorePacket packet = MeshcorePacket.fromString(packetBuffer);
+            assertInstanceOf(AdvertPacket.class, packet);
             byte[] hash = assertDoesNotThrow(packet::getPacketHash);
             LOG.trace(String.format("Got hash %s", hexFormat.formatHex(hash)));
             assertArrayEquals(hexFormat.parseHex(expectedHash), hash);
+            //Verify if the cryptographic signature is intact
+            assertTrue(((AdvertPacket) packet).verify());
         }
-
     }
 }

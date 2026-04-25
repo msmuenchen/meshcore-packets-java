@@ -1,6 +1,7 @@
 package de.afa_amateurfunk.meshcore_packets.payloads;
 
 import de.afa_amateurfunk.meshcore_packets.MeshcorePacket;
+import de.afa_amateurfunk.meshcore_packets.crypto.PublicKey;
 import de.afa_amateurfunk.meshcore_packets.exceptions.ParseErrorException;
 import de.afa_amateurfunk.meshcore_packets.types.AdvertNodeType;
 import de.afa_amateurfunk.meshcore_packets.types.PayloadType;
@@ -13,6 +14,7 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
 import java.time.Instant;
+import java.util.Arrays;
 
 /**
  * Advert packet
@@ -20,7 +22,7 @@ import java.time.Instant;
  * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/docs/payloads.md#node-advertisement">upstream doc</a>
  * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/dev/src/helpers/AdvertDataHelpers.h">upstream code</a>
  */
-public class AdvertPacket extends MeshcorePacket {
+public class AdvertPacket extends MeshcorePacket implements SignedPacket {
     /**
      * logger
      */
@@ -427,5 +429,29 @@ public class AdvertPacket extends MeshcorePacket {
                 ", timestamp=" + timestamp +
                 ", publicKey=" + hexFormat.formatHex(publicKey) +
                 '}';
+    }
+
+    /**
+     * Check if the advert packet's signature matches
+     *
+     * @return true if signature matches, false if not
+     * @see <a href="https://github.com/meshcore-dev/MeshCore/blob/main/src/Mesh.cpp#L253">upstream code</a>
+     */
+    @Override
+    public boolean verify() {
+        byte[] packetBytes = getPayloadBuffer();
+        LOG.trace(String.format("Verifying from %s", hexFormat.formatHex(packetBytes)));
+        // Length is basically the entire payload - 64 bytes for the signature
+        ByteBuffer messageByteBuilder = ByteBuffer.allocate(packetBytes.length - 64).order(ByteOrder.LITTLE_ENDIAN);
+        // Field 1: public key (32 bytes)
+        messageByteBuilder.put(packetBytes, 0, 32);
+        // Field 2: timestamp (4 bytes)
+        messageByteBuilder.put(packetBytes, 32, 4);
+        // Field 3: remaining appdata
+        messageByteBuilder.put(packetBytes, 100, packetBytes.length - 100);
+        byte[] messageBytes = messageByteBuilder.array();
+        LOG.trace(String.format("Message to verify: %s", hexFormat.formatHex(messageBytes)));
+        PublicKey advPk = new PublicKey(Arrays.copyOfRange(packetBytes, 0, 32));
+        return advPk.verifySignature(messageBytes, Arrays.copyOfRange(packetBytes, 36, 100));
     }
 }
