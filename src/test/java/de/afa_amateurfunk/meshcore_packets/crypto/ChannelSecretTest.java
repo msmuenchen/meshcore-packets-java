@@ -99,6 +99,4 @@ public class ChannelSecretTest extends AbstractLoggingTest {
         assertThat(ChannelSecret.lookupChannelSecret(hexFormat.parseHex("ec"))).contains(Map.entry("#freiburg", hexFormat.parseHex("ec1c88f03aad858a6d74ec36ac04c420")));
         assertThat(ChannelSecret.lookupChannelSecret(hexFormat.parseHex("ec"))).contains(Map.entry("#flachwitze", hexFormat.parseHex("ec98cd8821fada7fe21ff9e1df6c619f")));
     }
-
-
 }

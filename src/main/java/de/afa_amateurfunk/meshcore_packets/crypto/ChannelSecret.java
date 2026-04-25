@@ -38,7 +38,7 @@ public class ChannelSecret {
      * Calculate the secret for a hashtag channel
      *
      * @param name hashtag channel name, must start with #
-     * @return secret for symmetric encryption
+     * @return secret for symmetric encryption (16 bytes)
      */
     public static byte[] getHashtagChannelSecret(String name) {
         try {
@@ -57,18 +57,42 @@ public class ChannelSecret {
         }
     }
 
-    public static void registerChannelSecret(byte[] channelSecret, String name) {
-        LOG.trace(String.format("Registering channel secret %s for %s in lookup list", hexFormat.formatHex(channelSecret), name));
+    /**
+     * Register a channel secret and known cleartext name
+     *
+     * @param channelSecret channel secret (exactly 16 bytes)
+     * @param channelName   channel name (must start with #)
+     */
+    public static void registerChannelSecret(byte[] channelSecret, String channelName) {
+        if (channelSecret.length != 16)
+            throw new InvalidParameterException("Channel secret must be 16 bytes long");
+        if (!channelName.startsWith("#"))
+            throw new InvalidParameterException("Hashtag channel name must start with # sign");
+        LOG.trace(String.format("Registering channel secret %s for %s in lookup list", hexFormat.formatHex(channelSecret), channelName));
         if (!knownSecrets.containsValue(channelSecret))
-            knownSecrets.put(name, channelSecret);
+            knownSecrets.put(channelName, channelSecret);
     }
 
+    /**
+     * Register a channel secret that does not have a name (e.g. private channels) so that decrypters can decrypt packets
+     *
+     * @param channelSecret channel secret (exactly 16 bytes)
+     */
     public static void registerChannelSecret(byte[] channelSecret) {
+        if (channelSecret.length != 16)
+            throw new InvalidParameterException("Channel secret must be 16 bytes long");
         if (!knownSecrets.containsValue(channelSecret))
             knownSecrets.put(hexFormat.formatHex(channelSecret), channelSecret);
     }
 
+    /**
+     * register a channel secret by its name only.
+     * <p>can be used in observers to load a selection of known channel names at startup</p>
+     *
+     * @param name channel name (must start with #)
+     */
     public static void registerChannelSecret(String name) {
+        // Channel name will be enforced by getHashtagChannelSecret
         if (!knownSecrets.containsKey(name))
             getHashtagChannelSecret(name);
     }
