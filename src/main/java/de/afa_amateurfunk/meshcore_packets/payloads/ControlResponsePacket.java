@@ -175,18 +175,16 @@ public class ControlResponsePacket extends ControlPacket {
     @Override
     public String toString() {
         return "ControlResponsePacket{" +
-                "nodeType=" + nodeType +
+                "packetVersion=" + packetVersion +
+                ", packetPayloadType=" + packetPayloadType +
+                ", packetRouting=" + packetRouting +
+                ", transportCodes=" + (this.packetRouting.isUsingTransport() ? this.transportCodes[0] + " / " + this.transportCodes[1] : "null") +
+                ", packetPathInformation=" + packetPathInformation +
+                ", subtype=" + subtype +
+                ", nodeType=" + nodeType +
                 ", snr=" + (snr / 4) + " (" + hexFormat.formatHex(new byte[]{snr}) + ")" +
                 ", tag=" + (tag == null ? "null" : hexFormat.formatHex(tag)) +
                 ", publicKey=" + (publicKey == null ? "null" : hexFormat.formatHex(publicKey)) +
-                ", subtype=" + subtype +
-                ", packetVersion=" + packetVersion +
-                ", packetPayloadType=" + packetPayloadType +
-                ", packetRouting=" + packetRouting +
-                ", transportCodes=" + (this.packetRouting.isUsingTransport() ?
-                hexFormat.formatHex(this.transportCodes[0]) + " / " + hexFormat.formatHex(this.transportCodes[1])
-                : "null") +
-                ", packetPathInformation=" + packetPathInformation +
                 '}';
     }
 }

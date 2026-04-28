@@ -412,13 +412,11 @@ public class AdvertPacket extends MeshcorePacket implements SignedPacket {
     @Override
     public String toString() {
         return "AdvertPacket{" +
-                "packetPathInformation=" + packetPathInformation +
-                ", transportCodes=" + (this.packetRouting.isUsingTransport() ?
-                hexFormat.formatHex(this.transportCodes[0]) + " / " + hexFormat.formatHex(this.transportCodes[1])
-                : "null") +
-                ", packetRouting=" + packetRouting +
+                "packetVersion=" + packetVersion +
                 ", packetPayloadType=" + packetPayloadType +
-                ", packetVersion=" + packetVersion +
+                ", packetRouting=" + packetRouting +
+                ", transportCodes=" + (this.packetRouting.isUsingTransport() ? this.transportCodes[0] + " / " + this.transportCodes[1] : "null") +
+                ", packetPathInformation=" + packetPathInformation +
                 ", nodeName=" + new String(nodeName, StandardCharsets.UTF_8) +
                 ", feat2=" + feat2 +
                 ", feat1=" + feat1 +

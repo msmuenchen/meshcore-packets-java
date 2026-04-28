@@ -242,7 +242,9 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
         assertEquals(VersionType.VER_1, packet.getPacketVersion());
         assertEquals(RouteType.TRANSPORT_FLOOD, packet.getPacketRouting());
         byte[][] expectedTransportCodes = {{(byte) 0xAA, (byte) 0xBB}, {(byte) 0xCC, (byte) 0xDD}};
-        assertArrayEquals(expectedTransportCodes, packet.getTransportCodes());
+        assertArrayEquals(expectedTransportCodes, new byte[][]{
+                packet.getTransportCodes()[0].toByteArray(), packet.getTransportCodes()[1].toByteArray()
+        });
     }
 
     /**
@@ -272,7 +274,9 @@ public class HeaderIntegrationTests extends AbstractLoggingTest {
         assertEquals(VersionType.VER_1, packet.getPacketVersion());
         assertEquals(RouteType.TRANSPORT_DIRECT, packet.getPacketRouting());
         byte[][] expectedTransportCodes = {{(byte) 0xAA, (byte) 0xBB}, {(byte) 0xCC, (byte) 0xDD}};
-        assertArrayEquals(expectedTransportCodes, packet.getTransportCodes());
+        assertArrayEquals(expectedTransportCodes, new byte[][]{
+                packet.getTransportCodes()[0].toByteArray(), packet.getTransportCodes()[1].toByteArray()
+        });
     }
 
     /**

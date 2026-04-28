@@ -216,18 +216,16 @@ public class ControlRequestPacket extends ControlPacket {
     @Override
     public String toString() {
         return "ControlRequestPacket{" +
-                "prefix_only=" + prefix_only +
+                "packetVersion=" + packetVersion +
+                ", packetPayloadType=" + packetPayloadType +
+                ", packetRouting=" + packetRouting +
+                ", transportCodes=" + (this.packetRouting.isUsingTransport() ? this.transportCodes[0] + " / " + this.transportCodes[1] : "null") +
+                ", packetPathInformation=" + packetPathInformation +
+                ", subtype=" + subtype +
+                ", prefix_only=" + prefix_only +
                 ", typeFilter=" + typeFilter +
                 ", tag=" + hexFormat.formatHex(tag) +
                 ", since=" + since +
-                ", subtype=" + subtype +
-                ", packetVersion=" + packetVersion +
-                ", packetPayloadType=" + packetPayloadType +
-                ", packetRouting=" + packetRouting +
-                ", transportCodes=" + (this.packetRouting.isUsingTransport() ?
-                hexFormat.formatHex(this.transportCodes[0]) + " / " + hexFormat.formatHex(this.transportCodes[1])
-                : "null") +
-                ", packetPathInformation=" + packetPathInformation +
                 '}';
     }
 }

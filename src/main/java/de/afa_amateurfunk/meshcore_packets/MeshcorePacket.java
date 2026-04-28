@@ -2,6 +2,7 @@ package de.afa_amateurfunk.meshcore_packets;
 
 import de.afa_amateurfunk.meshcore_packets.exceptions.ParseErrorException;
 import de.afa_amateurfunk.meshcore_packets.payloads.*;
+import de.afa_amateurfunk.meshcore_packets.transport_codes.RawTransportCode;
 import de.afa_amateurfunk.meshcore_packets.types.PayloadType;
 import de.afa_amateurfunk.meshcore_packets.types.RouteType;
 import de.afa_amateurfunk.meshcore_packets.types.VersionType;
@@ -43,7 +44,7 @@ public abstract class MeshcorePacket {
      * a packet's raw transport codes
      * TODO refactor this once we actually are able to math with this?
      */
-    protected byte[][] transportCodes;
+    protected RawTransportCode[] transportCodes;
     /**
      * representation of a packet's path information (hop size, hop count and hops)
      */
@@ -155,10 +156,10 @@ public abstract class MeshcorePacket {
                 // Further checks are done in the PathInformation parser
                 if (buffer.length < 6)
                     throw new ParseErrorException("Packet too short for transport codes plus path information");
-                ret.transportCodes = new byte[2][];
-                ret.transportCodes[0] = Arrays.copyOfRange(buffer, 1, 3);
-                ret.transportCodes[1] = Arrays.copyOfRange(buffer, 3, 5);
-                LOG.trace("Packet is using transport codes {} / {}", hexFormat.formatHex(ret.transportCodes[0]), hexFormat.formatHex(ret.transportCodes[1]));
+                ret.transportCodes = new RawTransportCode[2];
+                ret.transportCodes[0] = new RawTransportCode(Arrays.copyOfRange(buffer, 1, 3));
+                ret.transportCodes[1] = new RawTransportCode(Arrays.copyOfRange(buffer, 3, 5));
+                LOG.trace("Packet is using transport codes {} / {}", ret.transportCodes[0], ret.transportCodes[1]);
                 ret.packetPathInformation = new PathInformation(Arrays.copyOfRange(buffer, 5, buffer.length));
                 payloadStart = 1 + 4 + ret.packetPathInformation.toByteArray().length;
             } else { // VPR PL [H1..HN]
@@ -205,9 +206,10 @@ public abstract class MeshcorePacket {
         this.packetVersion = sourcePacket.packetVersion;
         this.packetRouting = sourcePacket.packetRouting;
         if (this.packetRouting.isUsingTransport()) {
-            this.transportCodes = new byte[2][];
-            this.transportCodes[0] = Arrays.copyOf(sourcePacket.transportCodes[0], sourcePacket.transportCodes[0].length);
-            this.transportCodes[1] = Arrays.copyOf(sourcePacket.transportCodes[1], sourcePacket.transportCodes[1].length);
+            this.transportCodes = new RawTransportCode[2];
+            // TODO investigate if clone() works or if this causes a mess
+            this.transportCodes[0] = new RawTransportCode(sourcePacket.transportCodes[0].toByteArray());
+            this.transportCodes[1] = new RawTransportCode(sourcePacket.transportCodes[1].toByteArray());
         }
         this.packetPayloadType = sourcePacket.packetPayloadType;
         this.packetPathInformation = new PathInformation(sourcePacket.packetPathInformation.toByteArray());
@@ -295,7 +297,7 @@ public abstract class MeshcorePacket {
      *
      * @return transportCodes field
      */
-    public byte[][] getTransportCodes() {
+    public RawTransportCode[] getTransportCodes() {
         return transportCodes;
     }
 
@@ -304,7 +306,7 @@ public abstract class MeshcorePacket {
      *
      * @param transportCodes new value
      */
-    public void setTransportCodes(byte[][] transportCodes) {
+    public void setTransportCodes(RawTransportCode[] transportCodes) {
         this.transportCodes = transportCodes;
     }
 
@@ -319,9 +321,7 @@ public abstract class MeshcorePacket {
                 "packetVersion=" + packetVersion +
                 ", packetPayloadType=" + packetPayloadType +
                 ", packetRouting=" + packetRouting +
-                ", transportCodes=" + (this.packetRouting.isUsingTransport() ?
-                hexFormat.formatHex(this.transportCodes[0]) + " / " + hexFormat.formatHex(this.transportCodes[1])
-                : "null") +
+                ", transportCodes=" + (this.packetRouting.isUsingTransport() ? this.transportCodes[0] + " / " + this.transportCodes[1] : "null") +
                 ", packetPathInformation=" + packetPathInformation +
                 '}';
     }
@@ -343,9 +343,9 @@ public abstract class MeshcorePacket {
         LOG.trace(String.format("Reconstituted header byte %02x", vprByte));
         // If transport codes are used, these follow next
         if (packetRouting.isUsingTransport()) {
-            ret.put(transportCodes[0]);
-            ret.put(transportCodes[1]);
-            LOG.trace(String.format("Reconstituted transport codes %s / %s", hexFormat.formatHex(transportCodes[0]), hexFormat.formatHex(transportCodes[1])));
+            ret.put(transportCodes[0].toByteArray());
+            ret.put(transportCodes[1].toByteArray());
+            LOG.trace(String.format("Reconstituted transport codes %s / %s", hexFormat.formatHex(transportCodes[0].toByteArray()), hexFormat.formatHex(transportCodes[1].toByteArray())));
         }
         // Path information
         byte[] pathBuffer = packetPathInformation.toByteArray();
