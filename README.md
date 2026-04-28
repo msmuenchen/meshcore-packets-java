@@ -33,16 +33,23 @@ To generate the Jacoco reports and Javadoc, run `mvn clean package javadoc:javad
 ## What's working
 
 Decoding of the packet superstructure (i.e. version, routing, payload type, transport codes, path) works and is
-reasonably tested.
+reasonably tested. Packet hashes can be calculated, and supported payload types can also be fully manipulated and
+created from scratch:
+
+* Raw/Custom packets - fully supported as a structure. Individual applications using these can be implemented if someone
+  provides information.
+* Control: Request and Response packets are fully supported.
+* Advert: fully supported on the decoding side of things, including verification of signatures. Signing is not yet
+  supported.
 
 ## What's missing
 
-* Decoding of individual packet types
-* Calculating packet hashes
-* Encoding packets that have been created from scratch as Java objects into hex that can be sent off to the MeshCore
-  mesh
-* Patching packets (e.g. add new hops)
-* verifying signatures (e.g. advert payloads)
+* Decoding of individual packet types:
+    * AnonRequest/Request/Response
+    * Path/Trace
+    * TextMessage/Ack
+    * GroupText/GroupDatagram
+    * Multipart
 * signing advert payloads using a key
 * decrypting and encrypting of channel message payloads (GRP_TXT, GRP_DATA)
 * decrypting and encrypting of peer-to-peer payloads (TEXT_MSG)
