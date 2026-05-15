@@ -53,4 +53,18 @@ public class Ed25519Test extends AbstractLoggingTest {
 
         assertArrayEquals(hexFormat.parseHex(publicKey), Ed25519.derive_pubkey_orlp(hexFormat.parseHex(privateKey)));
     }
+
+    /**
+     * Test derivation from seed
+     */
+    @Test
+    public void testSeedDerivation() {
+        // Generated on https://cyphr.me/ed25519_tool/ed.html
+        String seed = "B9ED499FDEA1A690508165C29C5BB068EC31706D0CE952B472238E61D8CBF6E8";
+        String expectedPrivateKey = "60deedc5dc9cfe23dc0149f51157dae3b3c5f7fe2c492f586e4505cb94e0a460568b4ce618a35af1cb29552ce3cfbce7295e2bc9cb8e814112caef8c25d50529";
+        String publicKey = "C7D623FD7E673C52F4A22ADAEE2F0ED0A412FB466CBF5EEA3534C341F9EE7ED2";
+        byte[] orlpPrivateKey = Ed25519.seed_to_orlp(hexFormat.parseHex(seed));
+        assertArrayEquals(hexFormat.parseHex(expectedPrivateKey), orlpPrivateKey);
+        assertArrayEquals(hexFormat.parseHex(publicKey), Ed25519.derive_pubkey_orlp(orlpPrivateKey));
+    }
 }

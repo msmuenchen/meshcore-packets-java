@@ -14,6 +14,7 @@ public class Ed25519 extends org.bouncycastle.math.ec.rfc8032.Ed25519 {
     protected static Method implSignMethod;
     protected static Method createDigestMethod;
     protected static Method scalarMultBaseEncodedMethod;
+    protected static Method pruneScalarMethod;
 
     static {
         //private static void implSign(Digest d, byte[] h, byte[] s, byte[] pk, int pkOff, byte[] ctx, byte phflag, byte[] m,
@@ -47,6 +48,13 @@ public class Ed25519 extends org.bouncycastle.math.ec.rfc8032.Ed25519 {
                     int.class //rOff
             );
             scalarMultBaseEncodedMethod.setAccessible(true);
+            pruneScalarMethod = org.bouncycastle.math.ec.rfc8032.Ed25519.class.getDeclaredMethod(
+                    "pruneScalar",
+                    byte[].class, //n
+                    int.class, //nOff
+                    byte[].class //r
+            );
+            pruneScalarMethod.setAccessible(true);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
@@ -145,8 +153,10 @@ public class Ed25519 extends org.bouncycastle.math.ec.rfc8032.Ed25519 {
      * </p>
      *
      * @param privateKey orlp-style private key (64 bytes)
+     * @return public key, byte[32]
      * @see <a href="https://blog.mozilla.org/warner/2011/11/29/ed25519-keys/">Brian Warner on ed25519 key formats</a>
      * @see <a href="https://github.com/orlp/ed25519/pull/17/changes">orlp-ed25519 PR describing derivation of public key</a>
+     * @see org.bouncycastle.math.ec.rfc8032.Ed25519#generatePublicKey(byte[], int, byte[], int) (end of function)
      */
     public static byte[] derive_pubkey_orlp(byte[] privateKey) {
         try {
@@ -161,6 +171,36 @@ public class Ed25519 extends org.bouncycastle.math.ec.rfc8032.Ed25519 {
             scalarMultBaseEncodedMethod.invoke(null, a, pk, pkOff);
 
             return pk;
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * given a seed, derive its orlp-format private key
+     *
+     * @param seed 32 byte seed
+     * @return orlp-format private key (a || RH)
+     * @see org.bouncycastle.math.ec.rfc8032.Ed25519#generatePublicKey(byte[], int, byte[], int)
+     */
+    public static byte[] seed_to_orlp(byte[] seed) {
+        try {
+            Digest d = (Digest) createDigestMethod.invoke(null);
+
+            // LH || RH = sha512(seed)
+            byte[] lhrh = new byte[64];
+            d.update(seed, 0, SECRET_KEY_SIZE);
+            d.doFinal(lhrh, 0);
+
+            // a = prune(LH)
+            byte[] a = new byte[32];
+            pruneScalarMethod.invoke(null, lhrh, 0, a);
+
+            // orlp = a || RH
+            byte[] orlp = new byte[64];
+            System.arraycopy(a, 0, orlp, 0, 32);
+            System.arraycopy(lhrh, 32, orlp, 32, 32);
+            return orlp;
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
