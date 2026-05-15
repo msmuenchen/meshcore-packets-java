@@ -1,17 +1,22 @@
 package de.afa_amateurfunk.meshcore_packets.crypto;
 
+import de.afa_amateurfunk.meshcore_packets.Util;
+import org.bouncycastle.math.ec.rfc8032.Ed25519;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.InvalidParameterException;
-import java.security.KeyFactory;
-import java.security.Signature;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.HexFormat;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Ed25519 public key in Meshcore format
- * <p>We essentially wrap {@link java.security.PublicKey} to avoid upper levels (user applications) having to wrangle with ASN.1 on their own.</p>
+ * <p>
+ * MeshCore public keys are ed25519 with the additional assurance the first byte is not 0x00 or 0xFF.
+ * Implementation-wise we use BouncyCastle as it allows us to deal with raw byte arrays. That is not needed for public keys,
+ * but we go full Bouncycastle here so that our code can be ported to .NET Bouncycastle or, using orlp-ed25519, to C/C++
+ * </p>
+ *
  */
 public class PublicKey {
     /**
@@ -19,17 +24,9 @@ public class PublicKey {
      */
     private static final Logger LOG = LoggerFactory.getLogger(PublicKey.class);
     /**
-     * class-wide instance of hex formatter
+     * publicKey the public key, 32 bytes
      */
-    protected static HexFormat hexFormat = HexFormat.of();
-    /**
-     * the public key, 32 bytes
-     */
-    protected final byte[] publicKey;
-    /**
-     * Java crypto PublicKey
-     */
-    protected final java.security.PublicKey publicKeyObj;
+    protected byte[] publicKey;
 
     /**
      * construct a PublicKey instance
@@ -37,7 +34,7 @@ public class PublicKey {
      * @param publicKey the raw public key
      */
     public PublicKey(byte[] publicKey) {
-        LOG.trace(String.format("Attempting to construct public key from buffer %s", hexFormat.formatHex(publicKey)));
+        LOG.trace(String.format("Attempting to construct public key from buffer %s", Util.hexFormat.formatHex(publicKey)));
         // See https://news.ycombinator.com/item?id=26916544
         if (publicKey.length != 32)
             throw new InvalidParameterException("publicKey must be exactly 32 bytes long");
@@ -48,50 +45,7 @@ public class PublicKey {
             throw new InvalidParameterException("first byte of publicKey must not be 0xFF");
 
         this.publicKey = publicKey;
-        /*
-         * Java is a load of garbage
-         * See https://github.com/timbray/blueskidjava/blob/main/src/com/textuality/blueskid/Ed25519.java for the inspiration how to properly deal with this...
-         */
-        try {
-            final KeyFactory kf = KeyFactory.getInstance("Ed25519");
-            // BouncyCastle AND Java both want an actual X509 encoded key. No way around that, so construct an ASN.1 wrapper
-            // Warning: hot garbage follows
-            byte[] asn1Buffer = new byte[44];
-            asn1Buffer[0] = 0x30; // Sequence SubjectPublicKeyInfo
-            asn1Buffer[1] = 0x2A; // 42 bytes follow
-            asn1Buffer[2] = 0x30; // Sequence AlgorithmIdentifier
-            asn1Buffer[3] = 0x05; // 5 bytes follow
-            asn1Buffer[4] = 0x06; // Object Identifier
-            asn1Buffer[5] = 0x03; // 3 bytes follow
-            asn1Buffer[6] = 0x2B; // 43 - that's OID 1.3, see https://www.ranecommercial.com/legacy/note161.html - WTF
-            asn1Buffer[7] = 0x65; // 101 - that's OID 101 id-edwards-curve-algs, see https://datatracker.ietf.org/doc/html/rfc8410#section-9
-            asn1Buffer[8] = 0x70; // 112 - that's OID 112 id-Ed25519
-            asn1Buffer[9] = 0x03; // Bit String
-            asn1Buffer[10] = 0x21; // 33 bytes follow
-            asn1Buffer[11] = 0x00; // 0 bits of padding (apparently there's a possibility of differentiating between "constructed" and "primitive" encoding?) https://datatracker.ietf.org/doc/html/draft-kaliski-asn1-layman-guide-00#name-bit-string
-            // Now that we got the header constructed... copy in our public key byte by byte
-            System.arraycopy(this.publicKey, 0, asn1Buffer, 12, 32);
-            LOG.trace(String.format("Passing %s to X509EncodedKeySpec", hexFormat.formatHex(this.publicKey)));
-            final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(asn1Buffer);
-            publicKeyObj = kf.generatePublic(keySpec);
-
-            if (!publicKeyObj.getAlgorithm().equals("EdDSA")) {
-                throw new Exception("Key type is " + publicKeyObj.getAlgorithm() + ", should be EdDSA.");
-            }
-        } catch (Exception e) {
-            LOG.error("Failed to construct Java public key object out of public key bytes", e);
-            throw new RuntimeException(e);
-        }
-        LOG.trace("Created public key {}", hexFormat.formatHex(this.publicKey));
-    }
-
-    /**
-     * construct a PublicKey instance
-     *
-     * @param publicKey the raw public key
-     */
-    public PublicKey(String publicKey) {
-        this(hexFormat.parseHex(publicKey));
+        LOG.trace("Created public key {}", Util.hexFormat.formatHex(this.publicKey));
     }
 
     /**
@@ -111,26 +65,44 @@ public class PublicKey {
      * @return true if signature matches, false if not
      */
     public boolean verifySignature(byte[] message, byte[] signature) {
-        LOG.trace(String.format("Verifying if message %s was signed by PK %s / signature %s", hexFormat.formatHex(message), hexFormat.formatHex(this.publicKey), hexFormat.formatHex(signature)));
+        LOG.trace(String.format("Verifying if message %s was signed by PK %s / signature %s", Util.hexFormat.formatHex(message), Util.hexFormat.formatHex(this.publicKey), Util.hexFormat.formatHex(signature)));
         if (signature.length != 64)
             throw new InvalidParameterException("Signature must be 64 bytes in length");
-        try {
-            Signature sig = Signature.getInstance("ed25519");
-            sig.initVerify(publicKeyObj);
-            sig.update(message);
-            boolean ret = sig.verify(signature);
-            LOG.trace(String.format("Signature verification: %b", ret));
-            return ret;
-        } catch (Exception e) {
-            LOG.error("Failed to verify signature thanks to exception thrown", e);
-            throw new RuntimeException(e);
-        }
+
+        boolean ret = Ed25519.verify(signature, 0, publicKey, 0, message, 0, message.length);
+        LOG.trace(String.format("Signature verification: %b", ret));
+        return ret;
     }
 
     @Override
     public String toString() {
         return "PublicKey{" +
-                "publicKey=" + hexFormat.formatHex(publicKey) +
+                "publicKey=" + Util.hexFormat.formatHex(publicKey) +
                 '}';
     }
+
+    /**
+     * Equality check
+     *
+     * @param obj the reference object with which to compare.
+     * @return true if key is equal, false if not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (Objects.isNull(obj)) {
+            LOG.trace("Equality check failed, expected PublicKey, but got null.");
+            return false;
+        }
+        LOG.trace(String.format("Attempting equality comparison of %s with %s", this, obj));
+        if (!(obj instanceof PublicKey other)) {
+            LOG.trace(String.format("Equality check failed, expected PublicKey, but got %s.", obj.getClass().getName()));
+            return false;
+        }
+        if (!Arrays.equals(this.publicKey, other.publicKey)) {
+            LOG.trace(String.format("Equality check failed, expected key %s, but got %s.", Util.hexFormat.formatHex(this.publicKey), Util.hexFormat.formatHex(other.publicKey)));
+            return false;
+        }
+        return true;
+    }
+
 }
