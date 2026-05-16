@@ -1,6 +1,7 @@
 package de.afa_amateurfunk.meshcore_packets.payloads;
 
 import de.afa_amateurfunk.meshcore_packets.MeshcorePacket;
+import de.afa_amateurfunk.meshcore_packets.crypto.PrivateKey;
 import de.afa_amateurfunk.meshcore_packets.crypto.PublicKey;
 import de.afa_amateurfunk.meshcore_packets.exceptions.ParseErrorException;
 import de.afa_amateurfunk.meshcore_packets.types.AdvertNodeType;
@@ -14,7 +15,6 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
 import java.time.Instant;
-import java.util.Arrays;
 
 /**
  * Advert packet
@@ -30,7 +30,7 @@ public class AdvertPacket extends MeshcorePacket implements SignedPacket {
     /**
      * public key of node sending the advert, 32 bytes
      */
-    protected byte[] publicKey;
+    protected PublicKey publicKey;
     /**
      * timestamp (unix time), 4 bytes
      */
@@ -77,23 +77,14 @@ public class AdvertPacket extends MeshcorePacket implements SignedPacket {
     }
 
     /**
-     * Construct an instance with a pre-supplied payload buffer
-     *
-     * @param buffer byte buffer (payload only, no header!)
-     */
-    public AdvertPacket(String buffer) {
-        this(hexFormat.parseHex(buffer));
-    }
-
-    /**
      * Construct a packet from scratch
      */
     public AdvertPacket() {
         super();
         packetPayloadType = PayloadType.ADVERT;
-        publicKey = new byte[]{};
+        publicKey = null;
         timestamp = null;
-        signature = new byte[]{};
+        signature = null;
         latitude = null;
         longitude = null;
         feat1 = null;
@@ -120,12 +111,17 @@ public class AdvertPacket extends MeshcorePacket implements SignedPacket {
             throw new ParseErrorException("Payload buffer too long");
         LOG.trace("Attempting to parse buffer of {} bytes as Advert payload: '{}'", payloadBuffer.length, hexFormat.formatHex(payloadBuffer));
         ByteBuffer payloadView = ByteBuffer.wrap(payloadBuffer).asReadOnlyBuffer().order(ByteOrder.LITTLE_ENDIAN);
-        publicKey = new byte[32];
+
+        byte[] publicKey = new byte[32];
         payloadView.get(publicKey, 0, 32);
+        this.publicKey = new PublicKey(publicKey);
+
         int timestampSecs = payloadView.getInt();
         timestamp = Instant.ofEpochSecond(timestampSecs);
+
         signature = new byte[64];
         payloadView.get(signature, 0, 64);
+
         byte flagsByte = payloadView.get();
         nodeType = AdvertNodeType.fromHeader(flagsByte);
         /*
@@ -182,19 +178,8 @@ public class AdvertPacket extends MeshcorePacket implements SignedPacket {
      *
      * @return public key
      */
-    public byte[] getPublicKey() {
+    public PublicKey getPublicKey() {
         return publicKey;
-    }
-
-    /**
-     * set public key
-     *
-     * @param publicKey public key (exactly 32 bytes)
-     */
-    public void setPublicKey(byte[] publicKey) throws InvalidParameterException {
-        if (publicKey.length != 32)
-            throw new InvalidParameterException(String.format("input length mismatch: is %d, should be %d", publicKey.length, 32));
-        this.publicKey = publicKey;
     }
 
     /**
@@ -222,17 +207,6 @@ public class AdvertPacket extends MeshcorePacket implements SignedPacket {
      */
     public byte[] getSignature() {
         return signature;
-    }
-
-    /**
-     * set ed25519 signature
-     *
-     * @param signature signature, raw bytes (exactly 64 bytes)
-     */
-    public void setSignature(byte[] signature) {
-        if (signature.length != 64)
-            throw new InvalidParameterException(String.format("input length mismatch: is %d, should be %d", signature.length, 64));
-        this.signature = signature;
     }
 
     /**
@@ -353,11 +327,17 @@ public class AdvertPacket extends MeshcorePacket implements SignedPacket {
         // Allocate 149 bytes (currently maximum possible payload) to have a safe gate against emitting too large packets
         ByteBuffer ret = ByteBuffer.allocate(149).order(ByteOrder.LITTLE_ENDIAN);
         // Field 1: public key (32 bytes)
-        ret.put(publicKey);
+        if (publicKey == null)
+            ret.put(new byte[32]);
+        else
+            ret.put(publicKey.getPublicKey());
         // Field 2: timestamp (4 bytes)
         ret.putInt((int) timestamp.getEpochSecond());
         // Field 3: signature (64 bytes)
-        ret.put(signature);
+        if (signature == null)
+            ret.put(new byte[64]);
+        else
+            ret.put(signature);
         // Field 4: appdata_flags
         byte flagByte = 0x00;
 
@@ -425,8 +405,29 @@ public class AdvertPacket extends MeshcorePacket implements SignedPacket {
                 ", nodeType=" + nodeType +
                 ", signature=" + hexFormat.formatHex(signature) +
                 ", timestamp=" + timestamp +
-                ", publicKey=" + hexFormat.formatHex(publicKey) +
+                ", publicKey=" + (publicKey == null ? "null" : publicKey) +
                 '}';
+    }
+
+    /**
+     * get the message to sign
+     *
+     * @return byte buffer
+     */
+    protected byte[] getMessage() {
+        byte[] packetBytes = getPayloadBuffer();
+        LOG.trace(String.format("Getting message bytes from %s", hexFormat.formatHex(packetBytes)));
+        // Length is basically the entire payload - 64 bytes for the signature
+        ByteBuffer messageByteBuilder = ByteBuffer.allocate(packetBytes.length - 64).order(ByteOrder.LITTLE_ENDIAN);
+        // Field 1: public key (32 bytes)
+        messageByteBuilder.put(packetBytes, 0, 32);
+        // Field 2: timestamp (4 bytes)
+        messageByteBuilder.put(packetBytes, 32, 4);
+        // Field 3: remaining appdata
+        messageByteBuilder.put(packetBytes, 100, packetBytes.length - 100);
+        byte[] messageBytes = messageByteBuilder.array();
+        LOG.trace(String.format("Message bytes %s", hexFormat.formatHex(messageBytes)));
+        return messageBytes;
     }
 
     /**
@@ -437,19 +438,22 @@ public class AdvertPacket extends MeshcorePacket implements SignedPacket {
      */
     @Override
     public boolean verify() {
-        byte[] packetBytes = getPayloadBuffer();
-        LOG.trace(String.format("Verifying from %s", hexFormat.formatHex(packetBytes)));
-        // Length is basically the entire payload - 64 bytes for the signature
-        ByteBuffer messageByteBuilder = ByteBuffer.allocate(packetBytes.length - 64).order(ByteOrder.LITTLE_ENDIAN);
-        // Field 1: public key (32 bytes)
-        messageByteBuilder.put(packetBytes, 0, 32);
-        // Field 2: timestamp (4 bytes)
-        messageByteBuilder.put(packetBytes, 32, 4);
-        // Field 3: remaining appdata
-        messageByteBuilder.put(packetBytes, 100, packetBytes.length - 100);
-        byte[] messageBytes = messageByteBuilder.array();
+        byte[] messageBytes = getMessage();
         LOG.trace(String.format("Message to verify: %s", hexFormat.formatHex(messageBytes)));
-        PublicKey advPk = new PublicKey(Arrays.copyOfRange(packetBytes, 0, 32));
-        return advPk.verifySignature(messageBytes, Arrays.copyOfRange(packetBytes, 36, 100));
+        return publicKey.verifySignature(messageBytes, this.signature);
+    }
+
+    /**
+     * (Re)-Sign this packet using a specified private key, updating its publicKey field if present
+     *
+     * @param privateKey private key to use
+     */
+    @Override
+    public void updateSignature(PrivateKey privateKey) {
+        // Upsert public key from the private key
+        this.publicKey = privateKey.getPublicKey();
+        byte[] messageBytes = getMessage();
+        LOG.trace(String.format("Message to sign using key %s: %s", publicKey, hexFormat.formatHex(messageBytes)));
+        this.signature = privateKey.sign(messageBytes);
     }
 }
