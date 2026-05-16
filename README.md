@@ -39,8 +39,16 @@ created from scratch:
 * Raw/Custom packets - fully supported as a structure. Individual applications using these can be implemented if someone
   provides information.
 * Control: Request and Response packets are fully supported.
-* Advert: fully supported on the decoding side of things, including verification of signatures. Signing is not yet
-  supported.
+* Advert: Fully supported.
+
+Cryptography support:
+
+* Public / private key generation
+* Import of public and private keys from ed25519 seed and ed25519-orlp (also known as `a || RH` / `ref10` /
+  `expanded hash` format)
+* Conversion of ed25519 seed to ed25519-orlp format
+* Derivation of public key from private key
+* Creation and verification of digital signatures
 
 ## What's missing
 
@@ -50,14 +58,23 @@ created from scratch:
     * TextMessage/Ack
     * GroupText/GroupDatagram
     * Multipart
-* signing advert payloads using a key
 * decrypting and encrypting of channel message payloads (GRP_TXT, GRP_DATA)
 * decrypting and encrypting of peer-to-peer payloads (TEXT_MSG)
+
+Cryptography:
+
+* X25519 derivation of shared secret between two public / private key pairs
+* shared-secret encryption and decryption in channels
+* shared-secret (based on X25519) encryption and decryption between nodes
 
 # How to help
 
 Feel free to work on whatever you like and file pull requests. Please use JavaDoc and comments heavily if you are
 referring to concepts and definitions from the MeshCore code so that there is a bit of a reference trail.
+
+If you wish to create unit tests, the project aims for 100% line and branch coverage of all individual classes. The
+helper methods `toString`, `equals`, `hashCode` are excluded, and so are `if` assertions that are safeguards against
+legitimately impossible to reach places.
 
 # License / AI
 
