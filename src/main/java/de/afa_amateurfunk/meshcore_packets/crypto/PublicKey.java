@@ -38,6 +38,19 @@ public class PublicKey {
         // See https://news.ycombinator.com/item?id=26916544
         if (publicKey.length != 32)
             throw new InvalidParameterException("publicKey must be exactly 32 bytes long");
+
+        // Prevent an all-zero public key - technically legal if a matching private key is ever found, in practice it will mean a corrupt save/restore
+        boolean nonzeroFound = false;
+        for (byte b : publicKey) {
+            if (b != 0x00) {
+                nonzeroFound = true;
+                break;
+            }
+        }
+        if (!nonzeroFound) {
+            throw new InvalidParameterException("publicKey is all zeroes");
+        }
+
         // Gates set by MeshCore, see https://github.com/meshcore-dev/MeshCore/blob/main/src/Identity.cpp#L56
         if (publicKey[0] == 0x00)
             throw new InvalidParameterException("first byte of publicKey must not be 0x00");

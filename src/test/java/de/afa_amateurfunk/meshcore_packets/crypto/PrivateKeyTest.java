@@ -80,6 +80,71 @@ public class PrivateKeyTest extends AbstractLoggingTest {
     }
 
     /**
+     * Test creating a private key from orlp-style with a public key
+     */
+    @Test
+    public void testCreateFromOrlpWithPublicKey() {
+        // Generated on https://gessaman.com/mc-keygen/
+        String privateKey = "481541E6CA9CF485D80546440ADD76C18A6C971AE3EC7A1C5F4CA0A37FA0575E0D7780174B8F9AB6FC2384BA85E1A39FEB71EF9728CD41C6D2656FB575D49BA3";
+        String publicKey = "1A2BEE0B31567CD8CB799B3B7036C57741F00CA182238F6068331204785910B2";
+        PrivateKey pk = new PrivateKey(hexFormat.parseHex(privateKey), hexFormat.parseHex(publicKey));
+        assertArrayEquals(hexFormat.parseHex(privateKey), pk.getPrivateKey());
+        assertArrayEquals(hexFormat.parseHex(publicKey), pk.getPublicKey().getPublicKey());
+        assertNull(pk.getSeed());
+    }
+
+    /**
+     * Test if creating a private key from orlp-style with a wrong public key is denied
+     */
+    @Test
+    public void testDenyOrlpWrongPublicKey() {
+        // Generated on https://gessaman.com/mc-keygen/
+        String privateKey = "481541E6CA9CF485D80546440ADD76C18A6C971AE3EC7A1C5F4CA0A37FA0575E0D7780174B8F9AB6FC2384BA85E1A39FEB71EF9728CD41C6D2656FB575D49BA3";
+        String publicKey = "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f";
+        assertThrows(InvalidParameterException.class, () -> new PrivateKey(hexFormat.parseHex(privateKey), hexFormat.parseHex(publicKey)));
+    }
+
+    /**
+     * Test if creating a private key from orlp-style with a malformed scalar is denied
+     */
+    @Test
+    public void testDenyOrlpAAllZeroes() {
+        // Generated on https://gessaman.com/mc-keygen/
+        String privateKey = "00000000000000000000000000000000000000000000000000000000000000000D7780174B8F9AB6FC2384BA85E1A39FEB71EF9728CD41C6D2656FB575D49BA3";
+        assertThrows(InvalidParameterException.class, () -> new PrivateKey(hexFormat.parseHex(privateKey)));
+    }
+
+
+    /**
+     * Test if creating a private key from orlp-style with a malformed RH is denied
+     */
+    @Test
+    public void testDenyOrlpRHAllZeroes() {
+        // Generated on https://gessaman.com/mc-keygen/
+        String privateKey = "481541E6CA9CF485D80546440ADD76C18A6C971AE3EC7A1C5F4CA0A37FA0575E0000000000000000000000000000000000000000000000000000000000000000";
+        assertThrows(InvalidParameterException.class, () -> new PrivateKey(hexFormat.parseHex(privateKey)));
+    }
+
+    /**
+     * Test if creating a private key from orlp-style with a badly clamped key is denied
+     */
+    @Test
+    public void testDenyOrlpNoClamp() {
+        // Generated on https://gessaman.com/mc-keygen/
+        String privateKey = "481541E6CA9CF485D80546440ADD76C18A6C971AE3EC7A1C5F4CA0A37FA0575E0D7780174B8F9AB6FC2384BA85E1A39FEB71EF9728CD41C6D2656FB575D49BA3";
+        byte[] modKey = hexFormat.parseHex(privateKey);
+        // First check to test: byte 0 bits 0-2 must be 0
+        modKey[0] |= (byte) 0x07; //Force the 3 lowest bits to 1
+        assertThrows(InvalidParameterException.class, () -> new PrivateKey(modKey));
+        // Undo modification
+        modKey[0] &= (byte) 0xF8;
+        // Second check to test: byte 31 bits 6-7 must be 0b01
+        modKey[31] |= (byte) 0x80; // force bit 7 to 1
+        modKey[31] &= (byte) 0xBF; // force bit 6 to 0
+        assertThrows(InvalidParameterException.class, () -> new PrivateKey(modKey));
+    }
+
+    /**
      * Test signing a message
      */
     @Test

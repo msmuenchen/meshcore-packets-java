@@ -34,7 +34,7 @@ public class PublicKeyTest extends AbstractLoggingTest {
      * Test denial of wrong length
      */
     @Test
-    public void testCreateDeny() {
+    public void testCreateDenyLength() {
         // Meshcore's official unit-test key, shortened by 1 byte
         // https://github.com/meshcore-dev/MeshCore/blob/main/src/Identity.cpp#L69
         byte[] buf = new byte[]{
@@ -44,7 +44,34 @@ public class PublicKeyTest extends AbstractLoggingTest {
                 (byte) 0xf6, (byte) 0x45, (byte) 0xb4, (byte) 0x92, (byte) 0xe9, (byte) 0x35, (byte) 0x0c
         };
         assertThrows(InvalidParameterException.class, () -> new PublicKey(buf));
+    }
 
+    /**
+     * Test denial of wrong prefixes
+     */
+    @Test
+    public void testCreateDenyPrefixes() {
+        // Meshcore's official unit-test key, shortened by 1 byte
+        // https://github.com/meshcore-dev/MeshCore/blob/main/src/Identity.cpp#L69
+        byte[] buf = new byte[]{
+                (byte) 0x1e, (byte) 0xc7, (byte) 0x71, (byte) 0x75, (byte) 0xb0, (byte) 0x91, (byte) 0x8e, (byte) 0xd2,
+                (byte) 0x06, (byte) 0xf9, (byte) 0xae, (byte) 0x04, (byte) 0xec, (byte) 0x13, (byte) 0x6d, (byte) 0x6d,
+                (byte) 0x5d, (byte) 0x43, (byte) 0x15, (byte) 0xbb, (byte) 0x26, (byte) 0x30, (byte) 0x54, (byte) 0x27,
+                (byte) 0xf6, (byte) 0x45, (byte) 0xb4, (byte) 0x92, (byte) 0xe9, (byte) 0x35, (byte) 0x0c, (byte) 0x10,
+        };
+        buf[0] = (byte) 0xFF;
+        assertThrows(InvalidParameterException.class, () -> new PublicKey(buf));
+        buf[0] = (byte) 0x00;
+        assertThrows(InvalidParameterException.class, () -> new PublicKey(buf));
+    }
+
+    /**
+     * Test if creating from all-zeroes is denied
+     */
+    @Test
+    public void testDenyAllZeroes() {
+        String publicKey = "0000000000000000000000000000000000000000000000000000000000000000";
+        assertThrows(InvalidParameterException.class, () -> new PublicKey(hexFormat.parseHex(publicKey)));
     }
 
     /**
